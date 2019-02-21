@@ -1,0 +1,95 @@
+/***** 
+  STRUCTURE 
+*****/
+
+body {
+  font-size: .875rem;
+}
+
+.app {
+  position: relative;
+  padding: 55px 0 41px;
+}
+
+.app {
+  > .footer {
+    position: fixed;
+    bottom: 0;
+    padding: 0 .3rem;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    background-image: -webkit-linear-gradient(top,#3c3c3c 0,#222 100%);
+    background-image: -o-linear-gradient(top,#3c3c3c 0,#222 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#3c3c3c),to(#222));
+    background-image: linear-gradient(to bottom,#3c3c3c 0,#222 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3c3c3c', endColorstr='#ff222222', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+  }
+}
+
+.app {
+  > .header {
+    >.fixed-top {
+      z-index: initial;
+    }
+  }
+}
+
+.app > .footer, .app > .footer a{
+  color: #fff;
+}
+
+/* CLASS */
+
+.winOpen {
+  cursor: pointer;
+}
+
+/* LIST */
+
+ul {
+  list-style: none;
+}
+
+/****** 
+  LAYOUT 
+*****/
+
+.ui-datatable {
+  margin: 0 0 10px;
+}
+
+.headerTitle {
+  font-size: 1.5em;
+  color: #fff;
+  margin: 0;
+}
+
+.filter {
+  background: #ebedf0;
+  padding: .6rem 0;
+  margin: 0 0 .6rem;
+  border-bottom: solid 1px #ccc;
+  width: 100%;
+
+  .sr-only {
+      position: static; 
+      width: 70px;
+      height: auto;
+      padding: 0; 
+      margin: -1px;
+      font-weight: bold;
+  }
+
+  .sel {
+      width: 150px;
+  }
+}
+
+/* SELECAO DA LINHA NA TABELA DO PRIMEREACT */
+.ui-datatable tbody > tr.ui-widget-content.ui-state-highlight {
+  background-color: #E2E2E2;
+  color: #222;
+}

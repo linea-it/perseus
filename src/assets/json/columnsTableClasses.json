@@ -1,0 +1,19 @@
+[
+    {
+        "field": "className", 
+        "header": "Name"
+    },
+    {
+        "field": "displayName", 
+        "header": "Class"
+    },
+    {
+        "field": "typeName", 
+        "header": "Type Name"
+    },
+    {
+        "field": "typeDisplayName", 
+        "header": "Type"
+    }
+
+]
