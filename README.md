@@ -1,6 +1,6 @@
 # Perseus
 
-This App is LIneA's Science Portal Dashboard
+This App is LIneA's Science Portal My Workspace
 
 ## Docker installation
 
