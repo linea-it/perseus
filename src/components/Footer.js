@@ -1,18 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import logo from '../assets/img/linea-logo-mini.png';
 
-export default class Footer extends React.Component {
+class Footer extends React.Component {
   openLineaWebSite = () => {
     window.open('http://www.linea.gov.br/', 'linea');
   };
 
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
   render() {
     return (
-      <footer className="footer bg-inverse">
+      <footer className="footer">
         <span className="text-white float-left">Developer Portal Instance</span>
         <span className="text-white float-right">
-          Powered by{' '}
+          Powered by
           <img
             src={logo}
             className="winOpen"
@@ -25,3 +30,5 @@ export default class Footer extends React.Component {
     );
   }
 }
+
+export default Footer;

@@ -5,8 +5,7 @@ body {
   font-size: .875rem; }
 
 .app {
-  position: relative;
-  padding: 55px 0 41px; }
+  position: relative; }
 
 .app > .footer {
   position: fixed;
