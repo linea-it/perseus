@@ -1,24 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route } from 'react-router-dom';
+import './index.css';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
 
-import createHistory from 'history/createBrowserHistory';
+ReactDOM.render(<App />, document.getElementById('root'));
 
-import App from './containers/App';
-
-import 'primereact/resources/themes/omega/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-
-import './assets/css/App.css';
-
-import registerServiceWorker from './registerServiceWorker';
-const history = createHistory();
-
-ReactDOM.render(
-  <Router basename={process.env.REACT_APP_PUBLIC_URL} history={history}>
-    <Route path={`${process.env.PUBLIC_URL}/`} component={App} />
-  </Router>,
-  document.getElementById('root')
-);
-registerServiceWorker();
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: http://bit.ly/CRA-PWA
+serviceWorker.unregister();
