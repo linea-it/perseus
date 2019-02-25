@@ -1,54 +1,54 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { MuiThemeProvider } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
-
+import theme from '../theme/MaterialTheme';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
-import AppBar from '@material-ui/core/AppBar';
-import theme from '../theme/MaterialTheme';
-
 import logo from '../assets/img/icon-des.png';
 
 const styles = {
-    root: {
-      flexGrow: 1,
-    },
-    grow: {
-      flexGrow: 1,
-    },
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginLeft: -18,
+    marginRight: 10,
+  },
+  AppBar: {
+    backgroundColor: theme.palette.background,
+  },
+};
+
+class Header extends React.Component {
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
   };
 
-class Header extends Component {
+  render() {
+    const { classes } = this.props;
 
-    render() {
+    return (
+      <header className={classes.root}>
+        <AppBar className={classes.AppBar} position="static">
+          <Toolbar variant="dense">
+            <IconButton
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="Menu"
+            >
+              <img src={logo} alt="Portal" />
+            </IconButton>
 
-        const { classes } = this.props;
-
-        return (
-            <MuiThemeProvider theme={theme}>
-                <header className={classes.root}>
-                    <AppBar>
-                    <Toolbar>
-                        <IconButton color="inherit" aria-label="Menu">
-                        <img src={logo} />
-                        </IconButton>
-                        <Typography variant="h6" color="inherit" className={classes.grow}>
-                            Workspace
-                        </Typography>
-                    
-                        </Toolbar>
-                    </AppBar>
-                </header>
-            </MuiThemeProvider>
-        );
-    }
+            <Typography variant="h6" color="inherit">
+              My Workspace
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </header>
+    );
+  }
 }
-
-Header.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
-  
 
 export default withStyles(styles)(Header);

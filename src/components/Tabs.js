@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import theme from '../theme/MaterialTheme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import UserData from '../views/UserData/UserData';
 
 function TabContainer(props) {
   return (
@@ -23,14 +24,15 @@ TabContainer.propTypes = {
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+    // backgroundColor: theme.palette.background.paper,
+    height: '90vh',
   },
   appBar: {
     backgroundColor: theme.palette.background,
   },
   tab: {
     padding: 100,
-  }
+  },
 });
 
 class SimpleTabs extends React.Component {
@@ -50,15 +52,29 @@ class SimpleTabs extends React.Component {
       <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
           <AppBar position="static" className={classes.appBar}>
-            <Tabs value={value} indicatorColor="secondary" onChange={this.handleChange}>
+            <Tabs
+              value={value}
+              indicatorColor="secondary"
+              onChange={this.handleChange}
+            >
               <Tab label="Table" />
               <Tab label="Item " />
               <Tab label="User" />
             </Tabs>
           </AppBar>
-          {value === 0 && <TabContainer ><div className={classes.tab}>Text</div></TabContainer>}
-          {value === 1 && <TabContainer className={classes.tab}>Item Two</TabContainer>}
-          {value === 2 && <TabContainer className={classes.tab}>Item Three</TabContainer>}
+          {value === 0 && (
+            <TabContainer>
+              <div className={classes.tab}>Text</div>
+            </TabContainer>
+          )}
+          {value === 1 && (
+            <TabContainer className={classes.tab}>Item Two</TabContainer>
+          )}
+          {value === 2 && (
+            <TabContainer className={classes.tab}>
+              <UserData />
+            </TabContainer>
+          )}
         </div>
       </MuiThemeProvider>
     );
