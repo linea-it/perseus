@@ -6,37 +6,47 @@ import { Typography } from '@material-ui/core';
 import DefaultAvatar from '../assets/img/index.jpeg';
 import Grid from '@material-ui/core/Grid';
 
-const styles = {
+const styles = theme => ({
   bigAvatar: {
-    marginTop: 15,
-    marginLeft: 55,
+    // TODO usar margin spacing
+    marginLeft: 25,
     position: 'absolute',
-    width: 160,
-    height: 160,
+    width: 140,
+    height: 140,
     border: '5px solid #ffffff',
     boxShadow: '1px 1px 1px 1px #c6c6c6',
   },
+  // nameAvatar: {
+  //   // TODO usar margin spacing
+  //   marginTop: 80,
+  //   marginLeft: -85,
+  //   fontSize: '1.6rem',
+  // },
   nameAvatar: {
-    marginTop: 150,
-    color: '#fff',
-    fontSize: '1.6rem',
+    marginLeft: 180,
+    marginTop: 40,
+    color: theme.palette.primary.contrastText,
   },
-};
+});
 
 function ImageAvatars(props) {
   const { classes } = props;
   return (
     <Grid container alignItems="center" spacing={0}>
-      <Grid item xs={6}>
+      <Grid item xs={6} xl={12}>
         <Avatar
           alt="Remy Sharp"
           src={DefaultAvatar}
           className={classes.bigAvatar}
         />
+        <Typography variant="h5" className={classes.nameAvatar}>
+          Astronomy
+        </Typography>
       </Grid>
-      <Grid item xs={6}>
-        <Typography className={classes.nameAvatar}>John Doe</Typography>
-      </Grid>
+      {/* <Grid item xs={6} xl={12}> */}
+      {/* <Typography className={classes.nameAvatar}>Astronomy</Typography> */}
+      {/* <Typography variant='h4' className={}>Astronomy</Typography> */}
+      {/* </Grid> */}
     </Grid>
   );
 }

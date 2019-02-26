@@ -6,16 +6,13 @@ import SimpleTabs from '../components/Tabs.js';
 const styles = {
   root: {
     flexGrow: 1,
-    background: '#DCDCDC',
-    height: '95vh',
-    overflowY: 'hidden',
+    // background: '#DCDCDC',
+    minHeight: '95vh',
   },
   container: {
     width: '100%',
+    minHeight: 'inherit',
     background: 'inherit',
-  },
-  grow: {
-    flexGrow: 1,
   },
 };
 
