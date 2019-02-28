@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import theme from '../theme/MaterialTheme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import TableMyProcesses from '../components/TableMyProcesses';
 
 function TabContainer(props) {
   return (
@@ -30,7 +31,7 @@ const styles = theme => ({
   },
   tab: {
     padding: 100,
-  }
+  },
 });
 
 class SimpleTabs extends React.Component {
@@ -50,15 +51,27 @@ class SimpleTabs extends React.Component {
       <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
           <AppBar position="static" className={classes.appBar}>
-            <Tabs value={value} indicatorColor="secondary" onChange={this.handleChange}>
+            <Tabs
+              value={value}
+              indicatorColor="secondary"
+              onChange={this.handleChange}
+            >
               <Tab label="Table" />
               <Tab label="Item " />
               <Tab label="User" />
             </Tabs>
           </AppBar>
-          {value === 0 && <TabContainer ><div className={classes.tab}>Text</div></TabContainer>}
-          {value === 1 && <TabContainer className={classes.tab}>Item Two</TabContainer>}
-          {value === 2 && <TabContainer className={classes.tab}>Item Three</TabContainer>}
+          {value === 0 && (
+            <TabContainer>
+              <TableMyProcesses />
+            </TabContainer>
+          )}
+          {value === 1 && (
+            <TabContainer className={classes.tab}>Item Two</TabContainer>
+          )}
+          {value === 2 && (
+            <TabContainer className={classes.tab}>Item Three</TabContainer>
+          )}
         </div>
       </MuiThemeProvider>
     );
