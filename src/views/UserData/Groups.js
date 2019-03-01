@@ -7,7 +7,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import PersonPinIcon from '@material-ui/icons/PersonPin';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { Typography } from '@material-ui/core';
@@ -54,7 +53,6 @@ class UserData extends React.Component {
       return (
         <ListItem key={i} button>
           <ListItemIcon>
-            <PersonPinIcon />
           </ListItemIcon>
           <ListItemText inset primary={`${el.group}`} />
         </ListItem>
