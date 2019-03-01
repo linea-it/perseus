@@ -16,12 +16,6 @@ const styles = theme => ({
     border: '5px solid #ffffff',
     boxShadow: '1px 1px 1px 1px #c6c6c6',
   },
-  // nameAvatar: {
-  //   // TODO usar margin spacing
-  //   marginTop: 80,
-  //   marginLeft: -85,
-  //   fontSize: '1.6rem',
-  // },
   nameAvatar: {
     marginLeft: 180,
     marginTop: 40,
@@ -43,10 +37,6 @@ function ImageAvatars(props) {
           Astronomy
         </Typography>
       </Grid>
-      {/* <Grid item xs={6} xl={12}> */}
-      {/* <Typography className={classes.nameAvatar}>Astronomy</Typography> */}
-      {/* <Typography variant='h4' className={}>Astronomy</Typography> */}
-      {/* </Grid> */}
     </Grid>
   );
 }
