@@ -30,7 +30,7 @@ const style = theme => ({
     minHeight: '100px',
   },
   label: {
-    textTransform: 'uppercase',
+    // textTransform: 'uppercase',
     color: theme.palette.primary.dark,
   },
 });
@@ -47,7 +47,9 @@ class UserData extends React.Component {
     const dataProfile = Profile.map((el, i) => {
       return (
         <div key={i}>
-          <Typography className={classes.label} variant="body1">{el.name}</Typography>
+          <Typography className={classes.label} variant="body1">
+            {el.name}
+          </Typography>
           <Typography variant="h6" gutterBottom>
             {el.value}
           </Typography>

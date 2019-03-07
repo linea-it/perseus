@@ -8,23 +8,19 @@ import logoLinea from '../assets/img/linea-logo-mini.png';
 const styles = {
   root: {
     margin: 0,
+    flexGrow: 1,
+  },
+  grow: {
+    flexGrow: 1,
+  },
+  toolbar: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   appBar: {
     top: 'auto',
     bottom: 0,
-    // background: '#34465D',
-    // color: '#fff',
     height: '8vh',
-  },
-  footer: {
-    // fontSize: 14,
-    margin: 0,
-    verticalAlign: 'middle',
-  },
-  media: {
-    widht: '20px',
-    height: '20px',
-    // flexGrow: 12,
   },
 };
 
@@ -32,16 +28,22 @@ class Footer extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <footer>
+      <footer className={classes.root}>
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
-            <Typography variant="h6" color="inherit" className={classes.footer}>
+            <Typography
+              variant="subtitle1"
+              color="inherit"
+              className={classes.grow}
+            >
               Developer Portal Instance
+            </Typography>
+            <Typography variant="subtitle1" color="inherit">
+              Powered by LIneA
             </Typography>
             <figure>
               <img
                 alt="Contemplative Reptile"
-                className={classes.media}
                 src={logoLinea}
                 title="Contemplative Reptile"
               />
