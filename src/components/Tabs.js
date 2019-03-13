@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import theme from '../theme/MaterialTheme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+// import Filter from '../components/Filter';
 import TableMyProcesses from '../components/TableMyProcesses';
 
 function TabContainer(props) {
@@ -63,6 +64,7 @@ class SimpleTabs extends React.Component {
           </AppBar>
           {value === 0 && (
             <TabContainer>
+              {/* <Filter /> */}
               <TableMyProcesses />
             </TabContainer>
           )}
