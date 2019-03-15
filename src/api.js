@@ -27,13 +27,22 @@ export default class Centaurus {
     }
   }
 
-  static async getAllProcessesList(sorting, currentPage, pageSize) {
+  static async getAllProcessesList(sorting, pageSize, after) {
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
-    // const skip = `${pageSize * currentPage}`;
+    var strAfter = '';
+    if (after !== null) {
+      strAfter = `, after: "${after}"`;
+    }
     try {
       const processesList = await client.query(`
         {
-            processesList(saved: false, sort: [${sort}], first: ${pageSize} ) {
+            processesList(saved: true, sort: [${sort}], first: ${pageSize} ${strAfter}) {
+                pageInfo {
+                    startCursor
+                    endCursor
+                    hasNextPage
+                    hasPreviousPage
+                }
                 edges {
                     cursor
                     node {
@@ -68,12 +77,6 @@ export default class Centaurus {
                             }
                         }
                     }
-                }
-                pageInfo {
-                    startCursor
-                    endCursor
-                    hasNextPage
-                    hasPreviousPage
                 }
             }
         }

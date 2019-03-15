@@ -10,13 +10,13 @@ import {
   Table,
   TableHeaderRow,
   PagingPanel,
+  TableColumnResizing,
 } from '@devexpress/dx-react-grid-material-ui';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
-
-// const URL = 'https://js.devexpress.com/Demos/WidgetsGallery/data/orderItems';
+import moment from 'moment';
 
 export default class TableMyProcesses extends React.PureComponent {
   constructor(props) {
@@ -26,7 +26,7 @@ export default class TableMyProcesses extends React.PureComponent {
       columns: [
         { name: 'process_id', title: 'Process ID' },
         { name: 'start_time', title: 'Start Time' },
-        { name: 'end_time', title: 'Start End' },
+        { name: 'end_time', title: 'End Time' },
         { name: 'duration', title: 'Duration' },
         { name: 'pipeline', title: 'Pipeline' },
         { name: 'release', title: 'Release' },
@@ -36,11 +36,19 @@ export default class TableMyProcesses extends React.PureComponent {
         { name: 'saved', title: 'Saved' },
         { name: 'flag_published', title: 'Published' },
       ],
-      //   currencyColumns: ['SaleAmount'],
-      //   tableColumnExtensions: [
-      //     { columnName: 'OrderNumber', align: 'right' },
-      //     { columnName: 'SaleAmount', align: 'right' },
-      //   ],
+      columnWidths: [
+        { columnName: 'process_id', width: 130 },
+        { columnName: 'start_time', width: 180 },
+        { columnName: 'end_time', width: 180 },
+        { columnName: 'duration', width: 130 },
+        { columnName: 'pipeline', width: 200 },
+        { columnName: 'release', width: 130 },
+        { columnName: 'dataset', width: 130 },
+        { columnName: 'owner', width: 180 },
+        { columnName: 'status_id', width: 130 },
+        { columnName: 'saved', width: 130 },
+        { columnName: 'flag_published', width: 130 },
+      ],
       data: [],
       sorting: [{ columnName: 'process_id', direction: 'asc' }],
       totalCount: 0,
@@ -48,7 +56,7 @@ export default class TableMyProcesses extends React.PureComponent {
       pageSizes: [5, 10, 15],
       currentPage: 0,
       loading: true,
-      cursor: '',
+      after: '',
     };
   }
 
@@ -63,17 +71,21 @@ export default class TableMyProcesses extends React.PureComponent {
         loading: true,
         sorting,
       },
-      () => this.loadData(sorting)
+      () => this.loadData()
     );
   };
 
   changeCurrentPage = currentPage => {
+    var offset = currentPage * this.state.pageSize;
+
+    const after = window.btoa('arrayconnection:' + (offset - 1));
     this.setState(
       {
         loading: true,
         currentPage,
+        after: after,
       },
-      () => this.loadData(currentPage)
+      () => this.loadData()
     );
   };
 
@@ -88,22 +100,15 @@ export default class TableMyProcesses extends React.PureComponent {
         pageSize,
         currentPage,
       },
-      () => this.loadData(pageSize)
+      () => this.loadData()
     );
   };
 
-  changeCursor = cursor => {
-    this.setState(
-      {
-        loading: true,
-        cursor,
-      },
-      () => this.loadData(cursor)
-    );
+  changeColumnWidths = columnWidths => {
+    this.setState({ columnWidths });
   };
 
   loadTotalCount = async () => {
-    // Executa a api
     const processesList = await Centaurus.getAllProcessesListTotalCount();
 
     const processesListLocal = processesList.processesList.pageInfo.endCursor;
@@ -113,17 +118,16 @@ export default class TableMyProcesses extends React.PureComponent {
     const totalCount = decodeString.split(':')[1];
 
     this.setState({
-      totalCount: totalCount,
+      totalCount: parseInt(totalCount),
     });
   };
 
   loadData = async () => {
-    const { sorting, currentPage, pageSize, cursor } = this.state;
+    const { sorting, pageSize, after } = this.state;
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
-      currentPage,
       pageSize,
-      cursor
+      after
     );
 
     if (
@@ -132,26 +136,39 @@ export default class TableMyProcesses extends React.PureComponent {
       processesList.processesList.edges
     ) {
       const processesListLocal = processesList.processesList.edges.map(row => {
+        const startTime = moment(row.node.startTime);
+        const endTime = moment(row.node.endTime);
+
         return {
           process_id: row.node.processId,
-          start_time: row.node.startTime,
-          end_time: row.node.endTime,
-          // duration: row.node.,
+          start_time: row.node.startTime !== null ? row.node.startTime : '-',
+          end_time: row.node.endTime !== null ? row.node.endTime : '-',
+          duration:
+            row.node.startTime && row.node.endTime !== null
+              ? moment(endTime.diff(startTime)).format('hh:mm:ss')
+              : '-',
           pipeline: row.node.name,
-          release: row.node.fields.edges.node
-            ? row.node.fields.edges.node.releaseTag.releaseDisplayName
-            : null,
-          dataset: row.node.fields.edges.node
-            ? row.node.fields.edges.node.fieldName
-            : null,
+          release:
+            row.node.fields.edges.length !== 0
+              ? row.node.fields.edges.map(edge => {
+                  return edge.node.releaseTag.releaseDisplayName;
+                })
+              : '-',
+          dataset:
+            row.node.fields.edges.length !== 0
+              ? row.node.fields.edges.map(edge => {
+                  return edge.node.fieldName;
+                })
+              : '-',
           owner: row.node.session.user.displayName,
           status_id: row.node.processStatus.name,
           // saved: row.node.,
-          flag_published: row.node.flagPublished,
+          flag_published: row.node.flagPublished ? row.node.flagPublished : '-',
         };
       });
       this.setState({
         data: processesListLocal,
+        cursor: processesList.processesList.pageInfo,
         loading: false,
       });
     } else {
@@ -163,14 +180,13 @@ export default class TableMyProcesses extends React.PureComponent {
     const {
       data,
       columns,
-      //   tableColumnExtensions,
       sorting,
       pageSize,
       pageSizes,
       currentPage,
       totalCount,
       loading,
-      cursor,
+      columnWidths,
     } = this.state;
 
     return (
@@ -188,9 +204,12 @@ export default class TableMyProcesses extends React.PureComponent {
           />
           <CustomPaging totalCount={totalCount} />
           <Table />
-          {/* columnExtensions={tableColumnExtensions} */}
+          <TableColumnResizing
+            columnWidths={columnWidths}
+            onColumnWidthsChange={this.changeColumnWidths}
+          />
           <TableHeaderRow showSortingControls />
-          <PagingPanel pageSizes={pageSizes} cursor={cursor} />
+          <PagingPanel pageSizes={pageSizes} />
         </Grid>
         {loading && (
           <CircularProgress
