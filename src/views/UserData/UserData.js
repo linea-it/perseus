@@ -13,10 +13,10 @@ class UserData extends React.Component {
         alignItems="center"
         spacing={24}
       >
-        <Grid item sm={12} md={4} xl={12}>
+        <Grid item sm={12} md={4} xl={6}>
           <Profile />
         </Grid>
-        <Grid item sm={12} md={4} xl={12}>
+        <Grid item sm={12} md={4} xl={6}>
           <Groups />
         </Grid>
       </Grid>

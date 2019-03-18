@@ -5,7 +5,6 @@ import Card from '@material-ui/core/Card';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -52,8 +51,6 @@ class UserData extends React.Component {
     const listItem = list.map((el, i) => {
       return (
         <ListItem key={i} button>
-          <ListItemIcon>
-          </ListItemIcon>
           <ListItemText inset primary={`${el.group}`} />
         </ListItem>
       );

@@ -4,7 +4,6 @@ import Workspace from './views/Workspace';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import indigo from '@material-ui/core/colors/indigo';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import PropTypes from 'prop-types';
 import Footer from './components/Footer';
 
 const theme = createMuiTheme({
@@ -36,8 +35,6 @@ class App extends Component {
   }
 }
 
-App.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
+
 
 export default App;
