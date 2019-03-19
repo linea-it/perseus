@@ -4,13 +4,16 @@ import {
   PagingState,
   SortingState,
   CustomPaging,
+  SearchState,
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
-  Table,
+  VirtualTable,
   TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
+  Toolbar,
+  SearchPanel,
 } from '@devexpress/dx-react-grid-material-ui';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -57,6 +60,7 @@ export default class TableMyProcesses extends React.PureComponent {
       currentPage: 0,
       loading: true,
       after: '',
+      searchValue: '',
     };
   }
 
@@ -108,26 +112,56 @@ export default class TableMyProcesses extends React.PureComponent {
     this.setState({ columnWidths });
   };
 
-  loadTotalCount = async () => {
+  changeSearchValue = searchValue => {
+    const { columns } = this.state;
+    console.log('TESTE: ', searchValue);
+
+    searchValue = columns
+      .reduce((acc, { name }) => {
+        acc.push(`["${name}", "contains", "${searchValue}"]`);
+        return acc;
+      }, [])
+      .join(',"or",');
+
+    // if (columns.length > 1) {
+    //   searchValue = `[${searchValue}]`;
+    // }
+
+    this.setState(
+      {
+        loading: true,
+        searchValue,
+      },
+      () => this.loadData()
+    );
+  };
+
+  loadTotalCount = async radix => {
     const processesList = await Centaurus.getAllProcessesListTotalCount();
+    if (processesList !== null) {
+      const processesListLocal = processesList.processesList.pageInfo.endCursor;
 
-    const processesListLocal = processesList.processesList.pageInfo.endCursor;
+      const decodeString = window.atob(processesListLocal);
 
-    const decodeString = window.atob(processesListLocal);
+      const totalCount = decodeString.split(':')[1];
 
-    const totalCount = decodeString.split(':')[1];
-
-    this.setState({
-      totalCount: parseInt(totalCount),
-    });
+      this.setState({
+        totalCount: parseInt(totalCount, radix),
+      });
+    } else {
+      this.setState({
+        loading: false,
+      });
+    }
   };
 
   loadData = async () => {
-    const { sorting, pageSize, after } = this.state;
+    const { sorting, pageSize, after, searchValue } = this.state;
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
       pageSize,
-      after
+      after,
+      searchValue
     );
 
     if (
@@ -192,6 +226,7 @@ export default class TableMyProcesses extends React.PureComponent {
     return (
       <Paper style={{ position: 'relative' }}>
         <Grid rows={data} columns={columns}>
+          <SearchState onValueChange={this.changeSearchValue} />
           <SortingState
             sorting={sorting}
             onSortingChange={this.changeSorting}
@@ -203,13 +238,15 @@ export default class TableMyProcesses extends React.PureComponent {
             onPageSizeChange={this.changePageSize}
           />
           <CustomPaging totalCount={totalCount} />
-          <Table />
+          <VirtualTable />
           <TableColumnResizing
             columnWidths={columnWidths}
             onColumnWidthsChange={this.changeColumnWidths}
           />
           <TableHeaderRow showSortingControls />
           <PagingPanel pageSizes={pageSizes} />
+          <Toolbar />
+          <SearchPanel />
         </Grid>
         {loading && (
           <CircularProgress

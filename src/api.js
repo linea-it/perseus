@@ -27,16 +27,22 @@ export default class Centaurus {
     }
   }
 
-  static async getAllProcessesList(sorting, pageSize, after) {
+  static async getAllProcessesList(sorting, pageSize, after, searchValue) {
+    console.log('Sorting: ', sorting);
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
     var strAfter = '';
+    var search = [];
     if (after !== null) {
       strAfter = `, after: "${after}"`;
+    }
+    if (searchValue.length > 1) {
+      console.log('SEARCH: ', searchValue);
+      search = `, search: "${searchValue}"`;
     }
     try {
       const processesList = await client.query(`
         {
-            processesList(saved: true, sort: [${sort}], first: ${pageSize} ${strAfter}) {
+            processesList(saved: true, sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
                 pageInfo {
                     startCursor
                     endCursor
