@@ -28,7 +28,6 @@ export default class Centaurus {
   }
 
   static async getAllProcessesList(sorting, pageSize, after, searchValue) {
-    console.log('Sorting: ', sorting);
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
     var strAfter = '';
     var search = [];
@@ -36,7 +35,6 @@ export default class Centaurus {
       strAfter = `, after: "${after}"`;
     }
     if (searchValue.length > 1) {
-      console.log('SEARCH: ', searchValue);
       search = `, search: "${searchValue}"`;
     }
     try {

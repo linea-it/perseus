@@ -114,7 +114,6 @@ export default class TableMyProcesses extends React.PureComponent {
 
   changeSearchValue = searchValue => {
     const { columns } = this.state;
-    console.log('TESTE: ', searchValue);
 
     searchValue = columns
       .reduce((acc, { name }) => {
