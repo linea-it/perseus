@@ -1,18 +1,14 @@
-import React, { Component } from 'react';
-import Header from './components/Header';
-import Workspace from './views/Workspace';
-import Footer from './components/Footer';
+import React from 'react';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import theme from './theme/MaterialTheme';
+import Home from './views/home/home';
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-        <Header />
-        <Workspace />
-        <Footer />
-      </div>
-    );
-  }
+function App() {
+  return (
+    <MuiThemeProvider theme={theme}>
+      <Home />
+    </MuiThemeProvider>
+  );
 }
 
 export default App;
