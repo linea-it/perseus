@@ -22,10 +22,8 @@ TabContainer.propTypes = {
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    // backgroundColor: theme.palette.background.paper,
   },
   tabs: {
-    // backgroundColor: '#445C7A',
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.light,
     marginTop: '53px',
@@ -36,7 +34,6 @@ const styles = theme => ({
   },
 
   tab: {
-    // padding: 50,
     margin: 0,
     padding: 0,
   },
@@ -44,7 +41,7 @@ const styles = theme => ({
 
 class SimpleTabs extends React.Component {
   state = {
-    value: 0,
+    value: 3,
   };
 
   static propTypes = {

@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '../../components/Avatar';
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@material-ui/core';
 
 const style = theme => ({
   data: {
@@ -38,7 +38,7 @@ class UserData extends React.Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
   };
-
+  
   render() {
     const { classes } = this.props;
     const Profile = [
@@ -60,7 +60,7 @@ class UserData extends React.Component {
         </div>
       );
     });
-
+    
     return (
       <Grid container>
         <Grid item xs={12}>
