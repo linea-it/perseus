@@ -16,8 +16,8 @@ RUN chmod -R g+w /var/cache/nginx/
 
 # Write the PID file to a location where regular users have write access.
 RUN sed --regexp-extended --in-place=.bak 's%^pid\s+/var/run/nginx.pid;%pid /var/tmp/nginx.pid;%' /etc/nginx/nginx.conf
-COPY --from=builder /src/app/build /var/www/workspace
-RUN chgrp nginx /var/www/workspace
-RUN chmod -R g+w /var/www/workspace
+COPY --from=builder /src/app/build /var/www/my-workspace
+RUN chgrp nginx /var/www/my-workspace
+RUN chmod -R g+w /var/www/my-workspace
 ADD nginx-proxy.conf /etc/nginx/conf.d/default.conf
 USER nginx
