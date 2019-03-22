@@ -1,28 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import theme from '../theme/MaterialTheme';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { MuiThemeProvider } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
-
 import SimpleTabs from '../components/Tabs.js';
 
 const styles = {
   root: {
     flexGrow: 1,
-    background:'#c6c6c6',
-    height: '100vh',
-    overflowY: 'hidden',
+    // background: '#DCDCDC',
+    minHeight: '95vh',
   },
   container: {
-    margin: '100px 5%',
-    widht: '90%',
-    height: '680px',
-    background:'inherit',
-  },
-  grow: {
-    flexGrow: 1,
+    width: '100%',
+    minHeight: 'inherit',
+    background: 'inherit',
   },
 };
 
@@ -33,17 +23,19 @@ class Workspace extends Component {
 
   render() {
     const { classes } = this.props;
-    const { value } = this.state;
 
     return (
-        <section className={classes.root}>
-         <div className={classes.container}>
+      <section className={classes.root}>
+        <div className={classes.container}>
           <SimpleTabs />
-         </div>    
-        </section>
+        </div>
+      </section>
     );
   }
 }
 
+Workspace.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 
 export default withStyles(styles)(Workspace);

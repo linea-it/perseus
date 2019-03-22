@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import theme from '../theme/MaterialTheme';
-import { MuiThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import UserData from '../views/UserData/UserData';
 
 function TabContainer(props) {
   return (
@@ -23,19 +21,24 @@ TabContainer.propTypes = {
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+    // backgroundColor: theme.palette.background.paper,
   },
-  appBar: {
-    backgroundColor: theme.palette.background,
+  tabs: {
+    // backgroundColor: '#445C7A',
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.light,
   },
+
   tab: {
-    padding: 100,
-  }
+    // padding: 50,
+    margin: 0,
+    padding: 0,
+  },
 });
 
 class SimpleTabs extends React.Component {
   state = {
-    value: 0,
+    value: 3,
   };
 
   handleChange = (event, value) => {
@@ -47,20 +50,35 @@ class SimpleTabs extends React.Component {
     const { value } = this.state;
 
     return (
-      <MuiThemeProvider theme={theme}>
-        <div className={classes.root}>
-          <AppBar position="static" className={classes.appBar}>
-            <Tabs value={value} indicatorColor="secondary" onChange={this.handleChange}>
-              <Tab label="Table" />
-              <Tab label="Item " />
-              <Tab label="User" />
-            </Tabs>
-          </AppBar>
-          {value === 0 && <TabContainer ><div className={classes.tab}>Text</div></TabContainer>}
-          {value === 1 && <TabContainer className={classes.tab}>Item Two</TabContainer>}
-          {value === 2 && <TabContainer className={classes.tab}>Item Three</TabContainer>}
-        </div>
-      </MuiThemeProvider>
+      <div className={classes.root}>
+        <Tabs
+          value={value}
+          className={classes.tabs}
+          indicatorColor="primary"
+          onChange={this.handleChange}
+        >
+          <Tab label="My Process" />
+          <Tab label="My Comments" />
+          <Tab label="My Developer Zone" />
+          <Tab label="My Profile" />
+        </Tabs>
+        {value === 0 && (
+          <TabContainer>
+            <div className={classes.tab}>Text</div>
+          </TabContainer>
+        )}
+        {value === 1 && (
+          <TabContainer className={classes.tab}>Item Two</TabContainer>
+        )}
+        {value === 2 && (
+          <TabContainer className={classes.tab}>Item Two</TabContainer>
+        )}
+        {value === 3 && (
+          <TabContainer className={classes.tab}>
+            <UserData />
+          </TabContainer>
+        )}
+      </div>
     );
   }
 }
