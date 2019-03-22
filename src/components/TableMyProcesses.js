@@ -1,5 +1,8 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
+import Icon from '@material-ui/core/Icon';
+import { withStyles } from '@material-ui/core/styles';
 import {
   PagingState,
   SortingState,
@@ -21,7 +24,38 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Centaurus from '../api';
 import moment from 'moment';
 
-export default class TableMyProcesses extends React.PureComponent {
+const styles = {
+  btnStatus: {
+    textTransform: 'none',
+    padding: '1px 5px',
+    width: '5em',
+    minHeight: '1em',
+    display: 'block',
+    textAlign: 'center',
+    lineHeight: '2',
+    boxShadow:
+      '0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12)',
+    borderRadius: '4px',
+    boxSizing: 'border-box',
+  },
+  btnSuccess: {
+    backgroundColor: 'green',
+    color: '#fff',
+  },
+  btnFailure: {
+    backgroundColor: 'red',
+    color: '#fff',
+  },
+  btnRunning: {
+    backgroundColor: '#ffba01',
+    color: '#000',
+  },
+  iconCheck: {
+    color: 'green',
+  },
+};
+
+class TableMyProcesses extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -31,7 +65,7 @@ export default class TableMyProcesses extends React.PureComponent {
         { name: 'start_time', title: 'Start Time' },
         { name: 'end_time', title: 'End Time' },
         { name: 'duration', title: 'Duration' },
-        { name: 'pipeline', title: 'Pipeline' },
+        { name: 'name', title: 'Pipeline' },
         { name: 'release', title: 'Release' },
         { name: 'dataset', title: 'Dataset' },
         { name: 'owner', title: 'Owner' },
@@ -44,7 +78,7 @@ export default class TableMyProcesses extends React.PureComponent {
         { columnName: 'start_time', width: 180 },
         { columnName: 'end_time', width: 180 },
         { columnName: 'duration', width: 130 },
-        { columnName: 'pipeline', width: 200 },
+        { columnName: 'name', width: 200 },
         { columnName: 'release', width: 130 },
         { columnName: 'dataset', width: 130 },
         { columnName: 'owner', width: 180 },
@@ -63,6 +97,10 @@ export default class TableMyProcesses extends React.PureComponent {
       searchValue: '',
     };
   }
+
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
 
   componentDidMount() {
     this.loadTotalCount();
@@ -176,7 +214,7 @@ export default class TableMyProcesses extends React.PureComponent {
             row.node.startTime && row.node.endTime !== null
               ? moment(endTime.diff(startTime)).format('hh:mm:ss')
               : '-',
-          pipeline: row.node.name,
+          name: row.node.name,
           release:
             row.node.fields.edges.length !== 0
               ? row.node.fields.edges.map(edge => {
@@ -191,8 +229,9 @@ export default class TableMyProcesses extends React.PureComponent {
               : '-',
           owner: row.node.session.user.displayName,
           status_id: row.node.processStatus.name,
-          // saved: row.node.,
-          flag_published: row.node.flagPublished ? row.node.flagPublished : '-',
+          // saved: row.node.flagPublished !== null ? row.node.flagPublished : '-',
+          saved: row.node.flagPublished,
+          flag_published: row.node.flagPublished,
         };
       });
       this.setState({
@@ -203,6 +242,38 @@ export default class TableMyProcesses extends React.PureComponent {
     } else {
       return null;
     }
+  };
+
+  renderStatus = rowData => {
+    const { classes } = this.props;
+    if (rowData.status_id === 'failure') {
+      return (
+        <span className={classes.btnStatus} style={styles.btnFailure}>
+          Failure
+        </span>
+      );
+    } else if (rowData.status_id === 'running') {
+      return (
+        <span className={classes.btnStatus} style={styles.btnRunning}>
+          Running
+        </span>
+      );
+    } else {
+      return (
+        <span className={classes.btnStatus} style={styles.btnSuccess}>
+          Success
+        </span>
+      );
+    }
+  };
+
+  renderButtonCheck = rowData => {
+    const { classes } = this.props;
+
+    if (rowData.saved !== null && rowData.flag_published !== null) {
+      return <Icon className={classes.iconCheck}>check</Icon>;
+    }
+    return '-';
   };
 
   render() {
@@ -218,6 +289,13 @@ export default class TableMyProcesses extends React.PureComponent {
       columnWidths,
     } = this.state;
 
+    data.map(row => {
+      row.status_id = this.renderStatus(row);
+      row.saved = this.renderButtonCheck(row);
+      row.flag_published = this.renderButtonCheck(row);
+      return row;
+    });
+
     return (
       <Paper style={{ position: 'relative' }}>
         <Grid rows={data} columns={columns}>
@@ -225,6 +303,13 @@ export default class TableMyProcesses extends React.PureComponent {
           <SortingState
             sorting={sorting}
             onSortingChange={this.changeSorting}
+            columnExtensions={[
+              { columnName: 'duration', sortingEnabled: false },
+              { columnName: 'release', sortingEnabled: false },
+              { columnName: 'dataset', sortingEnabled: false },
+              { columnName: 'owner', sortingEnabled: false },
+              { columnName: 'saved', sortingEnabled: false },
+            ]}
           />
           <PagingState
             currentPage={currentPage}
@@ -258,3 +343,5 @@ export default class TableMyProcesses extends React.PureComponent {
     );
   }
 }
+
+export default withStyles(styles)(TableMyProcesses);

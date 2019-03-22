@@ -38,7 +38,7 @@ class UserData extends React.Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
   };
-  
+
   render() {
     const { classes } = this.props;
     const Profile = [
@@ -60,7 +60,7 @@ class UserData extends React.Component {
         </div>
       );
     });
-    
+
     return (
       <Grid container>
         <Grid item xs={12}>

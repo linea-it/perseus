@@ -41,7 +41,7 @@ const styles = theme => ({
 
 class SimpleTabs extends React.Component {
   state = {
-    value: 3,
+    value: 0,
   };
 
   static propTypes = {
