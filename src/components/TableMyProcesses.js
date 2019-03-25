@@ -25,7 +25,7 @@ import Centaurus from '../api';
 import moment from 'moment';
 
 const styles = {
-  btnStatus: {
+  btn: {
     textTransform: 'none',
     padding: '1px 5px',
     width: '5em',
@@ -53,6 +53,11 @@ const styles = {
   iconCheck: {
     color: 'green',
   },
+  itemLink: {
+    color: 'blue',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+  },
 };
 
 class TableMyProcesses extends React.PureComponent {
@@ -73,7 +78,7 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'saved', title: 'Saved' },
         { name: 'flag_published', title: 'Published' },
       ],
-      columnWidths: [
+      defaultColumnWidths: [
         { columnName: 'process_id', width: 130 },
         { columnName: 'start_time', width: 180 },
         { columnName: 'end_time', width: 180 },
@@ -146,10 +151,6 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
-  changeColumnWidths = columnWidths => {
-    this.setState({ columnWidths });
-  };
-
   changeSearchValue = searchValue => {
     const { columns } = this.state;
 
@@ -208,6 +209,7 @@ class TableMyProcesses extends React.PureComponent {
 
         return {
           process_id: row.node.processId,
+          productLog: row.node.productLog,
           start_time: row.node.startTime !== null ? row.node.startTime : '-',
           end_time: row.node.endTime !== null ? row.node.endTime : '-',
           duration:
@@ -243,23 +245,40 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
+  renderOpenProductLog = rowData => {
+    window.open(rowData, 'Process ID');
+  };
+
+  renderButtonProcessId = rowData => {
+    const { classes } = this.props;
+    return (
+      <span
+        className={classes.itemLink}
+        title={rowData.productLog}
+        onClick={() => this.renderOpenProductLog(rowData.productLog)}
+      >
+        {rowData.process_id}
+      </span>
+    );
+  };
+
   renderStatus = rowData => {
     const { classes } = this.props;
     if (rowData.status_id === 'failure') {
       return (
-        <span className={classes.btnStatus} style={styles.btnFailure}>
+        <span className={classes.btn} style={styles.btnFailure}>
           Failure
         </span>
       );
     } else if (rowData.status_id === 'running') {
       return (
-        <span className={classes.btnStatus} style={styles.btnRunning}>
+        <span className={classes.btn} style={styles.btnRunning}>
           Running
         </span>
       );
     } else {
       return (
-        <span className={classes.btnStatus} style={styles.btnSuccess}>
+        <span className={classes.btn} style={styles.btnSuccess}>
           Success
         </span>
       );
@@ -285,10 +304,11 @@ class TableMyProcesses extends React.PureComponent {
       currentPage,
       totalCount,
       loading,
-      columnWidths,
+      defaultColumnWidths,
     } = this.state;
 
     data.map(row => {
+      row.process_id = this.renderButtonProcessId(row);
       row.status_id = this.renderStatus(row);
       row.saved = this.renderButtonCheck(row);
       row.flag_published = this.renderButtonCheck(row);
@@ -318,10 +338,7 @@ class TableMyProcesses extends React.PureComponent {
           />
           <CustomPaging totalCount={totalCount} />
           <VirtualTable />
-          <TableColumnResizing
-            columnWidths={columnWidths}
-            onColumnWidthsChange={this.changeColumnWidths}
-          />
+          <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
           <TableHeaderRow showSortingControls />
           <PagingPanel pageSizes={pageSizes} />
           <Toolbar />

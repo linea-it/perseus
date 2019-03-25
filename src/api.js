@@ -63,6 +63,7 @@ export default class Centaurus {
                         flagPublished
                         publishedDate
                         statusId
+                        productLog
                         processStatus{
                             name
                         }
