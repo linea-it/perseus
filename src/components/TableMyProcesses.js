@@ -229,7 +229,6 @@ class TableMyProcesses extends React.PureComponent {
               : '-',
           owner: row.node.session.user.displayName,
           status_id: row.node.processStatus.name,
-          // saved: row.node.flagPublished !== null ? row.node.flagPublished : '-',
           saved: row.node.flagPublished,
           flag_published: row.node.flagPublished,
         };
