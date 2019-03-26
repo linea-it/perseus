@@ -10,12 +10,13 @@ pipeline {
     agent any
 
     stages {
-        // stage('Test') {
-        //     steps {
-        //         sh 'yarn install'
-        //         sh 'yarn lint'
-        //     }
-        // }
+        stage('Test') {
+            steps {
+                sh 'yarn install'
+                sh 'yarn lint'
+                sh 'yarn test'
+            }
+        }
         stage('Building and push image') {
             when {
                 allOf {

@@ -7,7 +7,7 @@ const styles = {
   root: {
     flexGrow: 1,
     // background: '#DCDCDC',
-    minHeight: '95vh',
+    // minHeight: 'calc(100vh - 6vh)',
   },
   container: {
     width: '100%',
@@ -16,9 +16,17 @@ const styles = {
   },
 };
 
-class Workspace extends Component {
-  state = {
-    value: 0,
+class Main extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: 0,
+    };
+  }
+
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
   };
 
   render() {
@@ -34,8 +42,4 @@ class Workspace extends Component {
   }
 }
 
-Workspace.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(Workspace);
+export default withStyles(styles)(Main);

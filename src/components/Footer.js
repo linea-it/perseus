@@ -25,6 +25,10 @@ const styles = {
 };
 
 class Footer extends Component {
+  openLineaWebSite = () => {
+    window.open('http://www.linea.gov.br/', 'linea');
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -43,9 +47,11 @@ class Footer extends Component {
             </Typography>
             <figure>
               <img
-                alt="Contemplative Reptile"
                 src={logoLinea}
-                title="Contemplative Reptile"
+                onClick={this.openLineaWebSite}
+                title="LIneA"
+                alt="LineA"
+                style={{ cursor: 'pointer' }}
               />
             </figure>
           </Toolbar>

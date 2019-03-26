@@ -4,11 +4,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
+import TableMyProcesses from '../components/TableMyProcesses';
 import UserData from '../views/UserData/UserData';
 
 function TabContainer(props) {
   return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
+    <Typography component="div" style={{ padding: 8 * 3, marginTop: 2 * 50 }}>
       {props.children}
     </Typography>
   );
@@ -21,16 +22,18 @@ TabContainer.propTypes = {
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    // backgroundColor: theme.palette.background.paper,
   },
   tabs: {
-    // backgroundColor: '#445C7A',
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.light,
+    marginTop: '53px',
+    position: 'fixed',
+    top: 0,
+    width: '100%',
+    zIndex: '9',
   },
 
   tab: {
-    // padding: 50,
     margin: 0,
     padding: 0,
   },
@@ -38,7 +41,11 @@ const styles = theme => ({
 
 class SimpleTabs extends React.Component {
   state = {
-    value: 3,
+    value: 0,
+  };
+
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
   };
 
   handleChange = (event, value) => {
@@ -63,15 +70,15 @@ class SimpleTabs extends React.Component {
           <Tab label="My Profile" />
         </Tabs>
         {value === 0 && (
-          <TabContainer>
-            <div className={classes.tab}>Text</div>
+          <TabContainer className={classes.tab}>
+            <TableMyProcesses />
           </TabContainer>
         )}
         {value === 1 && (
-          <TabContainer className={classes.tab}>Item Two</TabContainer>
+          <TabContainer className={classes.tab}>My Comments</TabContainer>
         )}
         {value === 2 && (
-          <TabContainer className={classes.tab}>Item Two</TabContainer>
+          <TabContainer className={classes.tab}>My Developer Zone</TabContainer>
         )}
         {value === 3 && (
           <TabContainer className={classes.tab}>
@@ -82,9 +89,5 @@ class SimpleTabs extends React.Component {
     );
   }
 }
-
-SimpleTabs.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(SimpleTabs);

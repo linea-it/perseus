@@ -32,10 +32,16 @@ const style = theme => ({
     minHeight: '150px',
   },
 });
+
 class UserData extends React.Component {
   state = {
     selected: false,
   };
+
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
   selectList = () => {
     this.setState({ selected: true });
   };
@@ -80,9 +86,5 @@ class UserData extends React.Component {
     );
   }
 }
-
-UserData.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(style)(UserData);

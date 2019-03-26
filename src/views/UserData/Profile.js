@@ -12,7 +12,6 @@ const style = theme => ({
     // TODO usar margin spacing
     margin: '80px 40px',
   },
-
   card: {
     display: 'flex',
     // TODO usar margin spacing
@@ -34,7 +33,12 @@ const style = theme => ({
     color: theme.palette.primary.dark,
   },
 });
+
 class UserData extends React.Component {
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
   render() {
     const { classes } = this.props;
     const Profile = [
@@ -56,6 +60,7 @@ class UserData extends React.Component {
         </div>
       );
     });
+
     return (
       <Grid container>
         <Grid item xs={12}>
@@ -72,9 +77,5 @@ class UserData extends React.Component {
     );
   }
 }
-
-UserData.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(style)(UserData);
