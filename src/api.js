@@ -3,7 +3,7 @@ import Transport from 'lokka-transport-http';
 
 const apiUrl =
   process.env.NODE_ENV === 'production'
-    ? window._env_.API_URL
+    ? window._env_.REACT_APP_API_URL
     : process.env.REACT_APP_API_URL;
 
 const client = new Lokka({
