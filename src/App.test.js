@@ -19,7 +19,7 @@ describe('App', () => {
         .find('Button')
         .at(0)
         .text()
-    ).toBe('Test Primary');
+    ).toBe('1');
   });
 
   afterEach(() => {

@@ -48,6 +48,9 @@
     "extends": "react-app"
   },
   "jest": {
+    "setupFiles": [
+      "./setup-jest.js"
+    ],
     "moduleNameMapper": {
       ".+\\.(svg|css|png|jpeg)$": "jest-transform-stub"
     }
