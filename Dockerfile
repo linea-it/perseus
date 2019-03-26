@@ -18,7 +18,7 @@ COPY nginx-proxy.conf /etc/nginx/conf.d/default.conf
 
 # RUNTIME ENV
 COPY env.sh /var/www/my-workspace
-COPY .env /var/www/my-workspace
+COPY .env.template /var/www/my-workspace/.env
 RUN chmod +x /var/www/my-workspace/env.sh
 WORKDIR /var/www/my-workspace
 
