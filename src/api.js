@@ -15,7 +15,24 @@ export default class Centaurus {
     try {
       const processesList = await client.query(`
         {
-            processesList(saved: false) {                    
+            processesList {                    
+                pageInfo {
+                    endCursor
+                }
+            }
+        }
+      `);
+      return processesList;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getAllProcessesListRunningTotalCount() {
+    try {
+      const processesList = await client.query(`
+        {
+            processesList(running: true) {                    
                 pageInfo {
                     endCursor
                 }
@@ -41,7 +58,7 @@ export default class Centaurus {
     try {
       const processesList = await client.query(`
         {
-            processesList(saved: true, sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
+            processesList(sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
                 pageInfo {
                     startCursor
                     endCursor
@@ -67,6 +84,63 @@ export default class Centaurus {
                         processStatus{
                             name
                         }
+                        session {
+                            user{
+                                displayName
+                            }
+                        }
+                        fields {
+                            edges {
+                                node {
+                                    fieldName
+                                    releaseTag {
+                                        releaseDisplayName
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      `);
+      return processesList;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static async getAllProcessesListRunning(
+    sorting,
+    pageSize,
+    after,
+    searchValue
+  ) {
+    const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
+    var strAfter = '';
+    var search = [];
+    if (after !== null) {
+      strAfter = `, after: "${after}"`;
+    }
+    if (searchValue.length > 1) {
+      search = `, search: "${searchValue}"`;
+    }
+    try {
+      const processesList = await client.query(`
+        {
+            processesList(running: true, sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
+                pageInfo {
+                    startCursor
+                    endCursor
+                    hasNextPage
+                    hasPreviousPage
+                }
+                edges {
+                    cursor
+                    node {
+                        processId
+                        startTime
+                        name
                         session {
                             user{
                                 displayName

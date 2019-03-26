@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
+import TableRunning from '../components/TableRunning';
 import TableMyProcesses from '../components/TableMyProcesses';
 import UserData from '../views/UserData/UserData';
 
@@ -64,23 +65,21 @@ class SimpleTabs extends React.Component {
           indicatorColor="primary"
           onChange={this.handleChange}
         >
+          <Tab label="Running Process" />
           <Tab label="My Process" />
-          <Tab label="My Comments" />
-          <Tab label="My Developer Zone" />
           <Tab label="My Profile" />
         </Tabs>
         {value === 0 && (
           <TabContainer className={classes.tab}>
-            <TableMyProcesses />
+            <TableRunning />
           </TabContainer>
         )}
         {value === 1 && (
-          <TabContainer className={classes.tab}>My Comments</TabContainer>
+          <TabContainer className={classes.tab}>
+            <TableMyProcesses />
+          </TabContainer>
         )}
         {value === 2 && (
-          <TabContainer className={classes.tab}>My Developer Zone</TabContainer>
-        )}
-        {value === 3 && (
           <TabContainer className={classes.tab}>
             <UserData />
           </TabContainer>
