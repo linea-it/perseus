@@ -1,8 +1,4 @@
-# Linea ReactJS template
-
-- Eslint
-- Jest tests
-- Material ui
+# Linea My Workspace
 
 ## Running locally
 
