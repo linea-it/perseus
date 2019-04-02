@@ -2,6 +2,11 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Icon from '@material-ui/core/Icon';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/core/styles';
 import {
   PagingState,
@@ -11,7 +16,7 @@ import {
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
-  VirtualTable,
+  Table,
   TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
@@ -25,6 +30,10 @@ import Centaurus from '../api';
 import moment from 'moment';
 
 const styles = {
+  wrapPaper: {
+    position: 'relative',
+    paddingTop: '10px',
+  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -58,6 +67,13 @@ const styles = {
     cursor: 'pointer',
     textDecoration: 'underline',
   },
+  formControl: {
+    width: '180px',
+    position: 'absolute',
+    top: '8px',
+    left: '24px',
+    zIndex: '999',
+  },
 };
 
 class TableMyProcesses extends React.PureComponent {
@@ -79,26 +95,27 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'flag_published', title: 'Published' },
       ],
       defaultColumnWidths: [
-        { columnName: 'process_id', width: 130 },
-        { columnName: 'start_time', width: 180 },
-        { columnName: 'end_time', width: 180 },
-        { columnName: 'duration', width: 130 },
-        { columnName: 'name', width: 200 },
-        { columnName: 'release', width: 130 },
-        { columnName: 'dataset', width: 130 },
-        { columnName: 'owner', width: 180 },
-        { columnName: 'status_id', width: 130 },
-        { columnName: 'saved', width: 130 },
-        { columnName: 'flag_published', width: 130 },
+        { columnName: 'process_id', width: 140 },
+        { columnName: 'start_time', width: 190 },
+        { columnName: 'end_time', width: 190 },
+        { columnName: 'duration', width: 140 },
+        { columnName: 'name', width: 210 },
+        { columnName: 'release', width: 140 },
+        { columnName: 'dataset', width: 180 },
+        { columnName: 'owner', width: 200 },
+        { columnName: 'status_id', width: 140 },
+        { columnName: 'saved', width: 140 },
+        { columnName: 'flag_published', width: 140 },
       ],
       data: [],
-      sorting: [{ columnName: 'process_id', direction: 'asc' }],
+      sorting: [{ columnName: 'process_id', direction: 'desc' }],
       totalCount: 0,
       pageSize: 10,
       pageSizes: [5, 10, 15],
       currentPage: 0,
       loading: true,
       after: '',
+      filter: '',
       searchValue: '',
     };
   }
@@ -190,11 +207,12 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   loadData = async () => {
-    const { sorting, pageSize, after, searchValue } = this.state;
+    const { sorting, pageSize, after, filter, searchValue } = this.state;
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
       pageSize,
       after,
+      filter,
       searchValue
     );
 
@@ -294,6 +312,52 @@ class TableMyProcesses extends React.PureComponent {
     return '-';
   };
 
+  handleChangeFilter = event => {
+    const filter = event.target.value;
+    this.setState(
+      {
+        loading: true,
+        filter,
+      },
+      () => this.loadData()
+    );
+  };
+
+  renderFilter = () => {
+    const { classes } = this.props;
+    return (
+      <FormControl className={classes.formControl}>
+        <InputLabel shrink htmlFor="filter-label-placeholder">
+          Filter
+        </InputLabel>
+        <Select
+          value={this.state.filter}
+          onChange={this.handleChangeFilter}
+          input={<Input name="filter" id="filter-label-placeholder" />}
+          displayEmpty
+          name="filter"
+        >
+          <MenuItem value="">All</MenuItem>
+          <MenuItem value={'running'}>Running</MenuItem>
+        </Select>
+      </FormControl>
+    );
+  };
+
+  renderLoading = () => {
+    return (
+      <CircularProgress
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          margin: '-30px 0 0 -20px',
+          zIndex: '99',
+        }}
+      />
+    );
+  };
+
   render() {
     const {
       data,
@@ -307,6 +371,8 @@ class TableMyProcesses extends React.PureComponent {
       defaultColumnWidths,
     } = this.state;
 
+    const { classes } = this.props;
+
     data.map(row => {
       row.process_id = this.renderButtonProcessId(row);
       row.status_id = this.renderStatus(row);
@@ -316,7 +382,8 @@ class TableMyProcesses extends React.PureComponent {
     });
 
     return (
-      <Paper style={{ position: 'relative' }}>
+      <Paper className={classes.wrapPaper}>
+        {this.renderFilter()}
         <Grid rows={data} columns={columns}>
           {/* <SearchState onValueChange={this.changeSearchValue} /> */}
           <SortingState
@@ -337,24 +404,14 @@ class TableMyProcesses extends React.PureComponent {
             onPageSizeChange={this.changePageSize}
           />
           <CustomPaging totalCount={totalCount} />
-          <VirtualTable />
+          <Table />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
           <TableHeaderRow showSortingControls />
           <PagingPanel pageSizes={pageSizes} />
           <Toolbar />
           {/* <SearchPanel /> */}
         </Grid>
-        {loading && (
-          <CircularProgress
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              margin: '-30px 0 0 -20px',
-              zIndex: '99',
-            }}
-          />
-        )}
+        {loading && this.renderLoading()}
       </Paper>
     );
   }

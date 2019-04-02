@@ -15,7 +15,7 @@ export default class Centaurus {
     try {
       const processesList = await client.query(`
         {
-            processesList(saved: false) {                    
+            processesList {                    
                 pageInfo {
                     endCursor
                 }
@@ -28,20 +28,34 @@ export default class Centaurus {
     }
   }
 
-  static async getAllProcessesList(sorting, pageSize, after, searchValue) {
+  static async getAllProcessesList(
+    sorting,
+    pageSize,
+    after,
+    filter,
+    searchValue
+  ) {
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
     var strAfter = '';
+    var strFilter = '';
     var search = [];
+
     if (after !== null) {
       strAfter = `, after: "${after}"`;
     }
+
     if (searchValue.length > 1) {
       search = `, search: "${searchValue}"`;
     }
+
+    if (filter === 'running') {
+      strFilter = `, running: true`;
+    }
+
     try {
       const processesList = await client.query(`
         {
-            processesList(saved: true, sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
+            processesList(sort: [${sort}], first: ${pageSize} ${strAfter} ${strFilter} ${search}) {
                 pageInfo {
                     startCursor
                     endCursor
@@ -52,16 +66,10 @@ export default class Centaurus {
                     cursor
                     node {
                         processId
-                        sessionId
                         startTime
                         endTime
-                        namespace
                         name
-                        processDir
-                        expirationTime
-                        comments
                         flagPublished
-                        publishedDate
                         statusId
                         productLog
                         processStatus{
