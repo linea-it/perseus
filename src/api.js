@@ -11,15 +11,30 @@ const client = new Lokka({
 });
 
 export default class Centaurus {
-  static async getAllProcessesListTotalCount() {
+  static async getAllProcessesListTotalCount(filter) {
+    var strFilter = '';
+
+    if (filter === 'complete') {
+      strFilter = 'running: false';
+    } else if (filter === 'incomplete') {
+      strFilter = 'running: true';
+    } else if (filter === 'saved') {
+      strFilter = 'saved: true';
+    } else if (filter === 'unsaved') {
+      strFilter = 'saved: false';
+    } else if (filter === 'all') {
+      strFilter = 'allInstances: true';
+    }
+
     try {
       const processesList = await client.query(`
         {
-            processesList {                    
-                pageInfo {
-                    endCursor
-                }
+          processesList( ${strFilter} ) {                    
+            pageInfo {
+              startCursor
+              endCursor
             }
+          }
         }
       `);
       return processesList;
@@ -48,51 +63,57 @@ export default class Centaurus {
       search = `, search: "${searchValue}"`;
     }
 
-    if (filter === 'running') {
-      strFilter = `, running: true`;
+    if (filter === 'complete') {
+      strFilter = 'running: false';
+    } else if (filter === 'incomplete') {
+      strFilter = 'running: true';
+    } else if (filter === 'saved') {
+      strFilter = 'saved: true';
+    } else if (filter === 'unsaved') {
+      strFilter = 'saved: false';
+    } else if (filter === 'all') {
+      strFilter = 'allInstances: true';
     }
 
     try {
       const processesList = await client.query(`
         {
-            processesList(sort: [${sort}], first: ${pageSize} ${strAfter} ${strFilter} ${search}) {
-                pageInfo {
-                    startCursor
-                    endCursor
-                    hasNextPage
-                    hasPreviousPage
-                }
-                edges {
-                    cursor
-                    node {
-                        processId
-                        startTime
-                        endTime
-                        name
-                        flagPublished
-                        statusId
-                        productLog
-                        processStatus{
-                            name
-                        }
-                        session {
-                            user{
-                                displayName
-                            }
-                        }
-                        fields {
-                            edges {
-                                node {
-                                    fieldName
-                                    releaseTag {
-                                        releaseDisplayName
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+          processesList(${strFilter}, sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
+            pageInfo {
+              startCursor
+              endCursor
             }
+            edges {
+              cursor
+              node {
+                processId
+                startTime
+                endTime
+                name
+                flagPublished
+                statusId
+                productLog
+                processStatus{
+                  name
+                }
+                session {
+                  user{
+                    displayName
+                  }
+                }
+                fields {
+                  edges {
+                    node {
+                      fieldName
+                      releaseTag {
+                        releaseDisplayName
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       `);
       return processesList;
