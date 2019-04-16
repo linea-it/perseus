@@ -12,7 +12,7 @@ import {
   PagingState,
   SortingState,
   CustomPaging,
-  // SearchState,
+  SearchState,
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
@@ -21,13 +21,14 @@ import {
   PagingPanel,
   TableColumnResizing,
   Toolbar,
-  // SearchPanel,
+  SearchPanel,
 } from '@devexpress/dx-react-grid-material-ui';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
 import moment from 'moment';
+import loading from '../assets/img/waiting.gif';
 
 const styles = {
   wrapPaper: {
@@ -119,7 +120,6 @@ class TableMyProcesses extends React.PureComponent {
       loading: true,
       after: '',
       filter: 'complete',
-      filterOld: null,
       searchValue: '',
     };
   }
@@ -129,7 +129,6 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   componentDidMount() {
-    // this.loadTotalCount();
     this.loadData();
   }
 
@@ -173,15 +172,6 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   changeSearchValue = searchValue => {
-    const { columns } = this.state;
-
-    searchValue = columns
-      .reduce((acc, { name }) => {
-        acc.push(`["${name}", "contains", "${searchValue}"]`);
-        return acc;
-      }, [])
-      .join(',"or",');
-
     this.setState(
       {
         loading: true,
@@ -191,60 +181,15 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
-  // loadTotalCount = async radix => {
-  //   const processesList = await Centaurus.getAllProcessesListTotalCount();
-  //   if (processesList !== null) {
-  //     const processesListLocal = processesList.processesList.pageInfo.endCursor;
-
-  //     const decodeString = window.atob(processesListLocal);
-
-  //     const totalCount = decodeString.split(':')[1];
-
-  //     this.setState({
-  //       totalCount: parseInt(totalCount, radix),
-  //     });
-  //   } else {
-  //     this.setState({
-  //       loading: false,
-  //     });
-  //   }
-  // };
-
-  decodeTotalCount = processesList => {
-    if (processesList !== null) {
-      const processesListLocal = processesList.processesList.pageInfo.endCursor;
-
-      const decodeString = window.atob(processesListLocal);
-
-      const totalCount = decodeString.split(':')[1];
-
-      return totalCount;
-    }
-  };
-
   clearData = () => {
     this.setState({
       data: [],
+      loading: false,
     });
   };
 
   loadData = async () => {
-    const {
-      sorting,
-      pageSize,
-      after,
-      filter,
-      searchValue,
-      filterOld,
-    } = this.state;
-    let { totalCount } = this.state;
-    this.clearData();
-    if (filter !== filterOld) {
-      const processesListTotal = await Centaurus.getAllProcessesListTotalCount(
-        filter
-      );
-      totalCount = this.decodeTotalCount(processesListTotal);
-    }
+    const { sorting, pageSize, after, filter, searchValue } = this.state;
 
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
@@ -262,6 +207,7 @@ class TableMyProcesses extends React.PureComponent {
       const processesListLocal = processesList.processesList.edges.map(row => {
         const startTime = moment(row.node.startTime);
         const endTime = moment(row.node.endTime);
+        const duration = moment(endTime.diff(startTime)).format('hh:mm:ss');
 
         return {
           process_id: row.node.processId,
@@ -269,9 +215,7 @@ class TableMyProcesses extends React.PureComponent {
           start_time: row.node.startTime !== null ? row.node.startTime : '-',
           end_time: row.node.endTime !== null ? row.node.endTime : '-',
           duration:
-            row.node.startTime && row.node.endTime !== null
-              ? moment(endTime.diff(startTime)).format('hh:mm:ss')
-              : '-',
+            row.node.startTime && row.node.endTime !== null ? duration : '-',
           name: row.node.name,
           release:
             row.node.fields.edges.length !== 0
@@ -287,19 +231,21 @@ class TableMyProcesses extends React.PureComponent {
               : '-',
           owner: row.node.session.user.displayName,
           status_id: row.node.processStatus.name,
-          saved: row.node.flagPublished,
+          saved: row.node.savedProcesses,
+          // row.node.savedProcesses.savedDate ||
+          // row.node.savedProcesses.savedDateEnd,
           flag_published: row.node.flagPublished,
         };
       });
       this.setState({
         data: processesListLocal,
-        totalCount: parseInt(totalCount),
+        totalCount: parseInt(processesList.processesList.totalCount),
         cursor: processesList.processesList.pageInfo,
         loading: false,
         filterOld: filter,
       });
     } else {
-      return null;
+      this.clearData();
     }
   };
 
@@ -322,6 +268,7 @@ class TableMyProcesses extends React.PureComponent {
 
   renderStatus = rowData => {
     const { classes } = this.props;
+
     if (rowData.status_id === 'failure') {
       return (
         <span className={classes.btn} style={styles.btnFailure}>
@@ -343,13 +290,28 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderButtonCheck = rowData => {
+  renderSaved = rowData => {
     const { classes } = this.props;
 
-    if (rowData.saved !== null && rowData.flag_published !== null) {
-      return <Icon className={classes.iconCheck}>check</Icon>;
+    if (rowData.saved) {
+      if (rowData.saved.savedDateEnd === null) {
+        return <img src={loading} alt="" />;
+      } else {
+        return <Icon className={classes.iconCheck}>check</Icon>;
+      }
+    } else if (rowData.saved === null) {
+      return '-';
     }
-    return '-';
+  };
+
+  renderCheck = rowData => {
+    const { classes } = this.props;
+
+    if (rowData.flag_published) {
+      return <Icon className={classes.iconCheck}>check</Icon>;
+    } else {
+      return '-';
+    }
   };
 
   handleChangeFilter = evt => {
@@ -404,7 +366,7 @@ class TableMyProcesses extends React.PureComponent {
 
     return (
       <Grid rows={data} columns={columns}>
-        {/* <SearchState onValueChange={this.changeSearchValue} /> */}
+        <SearchState onValueChange={this.changeSearchValue} />
         <SortingState
           sorting={sorting}
           onSortingChange={this.changeSorting}
@@ -428,7 +390,7 @@ class TableMyProcesses extends React.PureComponent {
         <TableHeaderRow showSortingControls />
         <PagingPanel pageSizes={pageSizes} />
         <Toolbar />
-        {/* <SearchPanel /> */}
+        <SearchPanel />
       </Grid>
     );
   };
@@ -454,8 +416,8 @@ class TableMyProcesses extends React.PureComponent {
     data.map(row => {
       row.process_id = this.renderButtonProcessId(row);
       row.status_id = this.renderStatus(row);
-      row.saved = this.renderButtonCheck(row);
-      row.flag_published = this.renderButtonCheck(row);
+      row.saved = this.renderSaved(row);
+      row.flag_published = this.renderCheck(row);
       return row;
     });
 
