@@ -33,7 +33,7 @@
     "jest": "^23.6.0",
     "jest-transform-stub": "^2.0.0",
     "prettier": "^1.16.4",
-    "react-scripts": "2.1.5"
+    "react-scripts": "^2.1.8"
   },
   "scripts": {
     "start": "react-scripts start",

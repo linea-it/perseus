@@ -11,84 +11,83 @@ const client = new Lokka({
 });
 
 export default class Centaurus {
-  static async getAllProcessesListTotalCount() {
-    try {
-      const processesList = await client.query(`
-        {
-            processesList(saved: false) {                    
-                pageInfo {
-                    endCursor
-                }
-            }
-        }
-      `);
-      return processesList;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static async getAllProcessesList(sorting, pageSize, after, searchValue) {
+  static async getAllProcessesList(
+    sorting,
+    pageSize,
+    after,
+    filter,
+    searchValue
+  ) {
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
     var strAfter = '';
-    var search = [];
+    var strFilter = '';
+
     if (after !== null) {
       strAfter = `, after: "${after}"`;
     }
-    if (searchValue.length > 1) {
-      search = `, search: "${searchValue}"`;
+
+    if (filter === 'complete') {
+      strFilter = 'running: false';
+    } else if (filter === 'incomplete') {
+      strFilter = 'running: true';
+    } else if (filter === 'saved') {
+      strFilter = 'saved: true';
+    } else if (filter === 'unsaved') {
+      strFilter = 'saved: false';
+    } else if (filter === 'all') {
+      strFilter = 'allInstances: true';
     }
+
     try {
       const processesList = await client.query(`
         {
-            processesList(saved: true, sort: [${sort}], first: ${pageSize} ${strAfter} ${search}) {
-                pageInfo {
-                    startCursor
-                    endCursor
-                    hasNextPage
-                    hasPreviousPage
-                }
-                edges {
-                    cursor
-                    node {
-                        processId
-                        sessionId
-                        startTime
-                        endTime
-                        namespace
-                        name
-                        processDir
-                        expirationTime
-                        comments
-                        flagPublished
-                        publishedDate
-                        statusId
-                        productLog
-                        processStatus{
-                            name
-                        }
-                        session {
-                            user{
-                                displayName
-                            }
-                        }
-                        fields {
-                            edges {
-                                node {
-                                    fieldName
-                                    releaseTag {
-                                        releaseDisplayName
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+          processesList(${strFilter}, search: "${searchValue}", sort: [${sort}], first: ${pageSize} ${strAfter}) {
+            pageInfo {
+              startCursor
+              endCursor
             }
+            totalCount
+            edges {
+              cursor
+              node {
+                processId
+                startTime
+                endTime
+                name
+                flagPublished
+                statusId
+                productLog
+                savedProcesses {
+                  savedDate
+                  savedDateEnd
+                }
+                processStatus{
+                  name
+                }
+                session {
+                  user{
+                    displayName
+                  }
+                }
+                fields {
+                  edges {
+                    node {
+                      fieldName
+                      releaseTag {
+                        releaseDisplayName
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       `);
       return processesList;
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
       return null;
     }
   }

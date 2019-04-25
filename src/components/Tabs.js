@@ -15,7 +15,22 @@ function TabContainer(props) {
   );
 }
 
+function TabContainerTable(props) {
+  return (
+    <Typography
+      component="div"
+      style={{ paddingTop: 8 * 2, paddingBottom: 2 * 40, marginTop: 2 * 50 }}
+    >
+      {props.children}
+    </Typography>
+  );
+}
+
 TabContainer.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+TabContainerTable.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
@@ -65,22 +80,14 @@ class SimpleTabs extends React.Component {
           onChange={this.handleChange}
         >
           <Tab label="My Process" />
-          <Tab label="My Comments" />
-          <Tab label="My Developer Zone" />
           <Tab label="My Profile" />
         </Tabs>
         {value === 0 && (
-          <TabContainer className={classes.tab}>
+          <TabContainerTable className={classes.tab}>
             <TableMyProcesses />
-          </TabContainer>
+          </TabContainerTable>
         )}
         {value === 1 && (
-          <TabContainer className={classes.tab}>My Comments</TabContainer>
-        )}
-        {value === 2 && (
-          <TabContainer className={classes.tab}>My Developer Zone</TabContainer>
-        )}
-        {value === 3 && (
           <TabContainer className={classes.tab}>
             <UserData />
           </TabContainer>

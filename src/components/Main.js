@@ -6,8 +6,6 @@ import SimpleTabs from '../components/Tabs.js';
 const styles = {
   root: {
     flexGrow: 1,
-    // background: '#DCDCDC',
-    // minHeight: 'calc(100vh - 6vh)',
   },
   container: {
     width: '100%',
