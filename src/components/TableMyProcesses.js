@@ -32,7 +32,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Centaurus from '../api';
 import moment from 'moment';
-import loading from '../assets/img/waiting.gif';
 
 const styles = {
   wrapPaper: {
