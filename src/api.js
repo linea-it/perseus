@@ -70,10 +70,10 @@ export default class Centaurus {
                   }
                 }
                 fields {
-                  edges {
-                    node {
+                  edges{
+                    node{
                       fieldName
-                      releaseTag {
+                      releaseTag{
                         releaseDisplayName
                       }
                     }
