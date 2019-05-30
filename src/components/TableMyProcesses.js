@@ -243,7 +243,7 @@ class TableMyProcesses extends React.PureComponent {
           fields_display_name:
             row.node.fields.edges.length !== 0
               ? row.node.fields.edges.map(edge => {
-                  return edge.node.fieldName;
+                  return edge.node.displayName;
                 })
               : '-',
           tguser_display_name: row.node.session.user.displayName,
