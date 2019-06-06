@@ -100,8 +100,8 @@ class TableMyProcesses extends React.PureComponent {
     return {
       columns: [
         { name: 'processes_process_id', title: 'Process ID' },
-        { name: 'processes_start_date', title: 'Start Date' },
-        { name: 'processes_start_time', title: 'Start Time' },
+        { name: 'processes_start_time', title: 'Start Date' },
+        { name: 'processes_start_date', title: 'Start Time' },
         { name: 'duration', title: 'Duration' },
         { name: 'processes_name', title: 'Pipeline' },
         { name: 'releasetag_release_display_name', title: 'Release' },
@@ -113,8 +113,8 @@ class TableMyProcesses extends React.PureComponent {
       ],
       defaultColumnWidths: [
         { columnName: 'processes_process_id', width: 140 },
-        { columnName: 'processes_start_date', width: 140 },
-        { columnName: 'processes_start_time', width: 120 },
+        { columnName: 'processes_start_time', width: 140 },
+        { columnName: 'processes_start_date', width: 120 },
         { columnName: 'duration', width: 110 },
         { columnName: 'processes_name', width: 180 },
         { columnName: 'releasetag_release_display_name', width: 180 },
@@ -219,6 +219,12 @@ class TableMyProcesses extends React.PureComponent {
       processesList.processesList.edges
     ) {
       const processesListLocal = processesList.processesList.edges.map(row => {
+        const startDateSplit = row.node.startTime
+          ? row.node.startTime.split('T')[1]
+          : null;
+        const startTimeSplit = row.node.startTime
+          ? row.node.startTime.split('T')[0]
+          : null;
         const startTime = moment(row.node.startTime);
         const endTime = moment(row.node.endTime);
         const diff = endTime.diff(startTime);
@@ -227,8 +233,8 @@ class TableMyProcesses extends React.PureComponent {
         return {
           processes_process_id: row.node.processId,
           productLog: row.node.productLog,
-          processes_start_date: row.node.startTime.split('T')[0],
-          processes_start_time: row.node.startTime.split('T')[1],
+          processes_start_date: startDateSplit,
+          processes_start_time: startTimeSplit,
           processes_end_time: row.node.endTime,
           duration:
             row.node.startTime && row.node.endTime !== null ? duration : '-',
