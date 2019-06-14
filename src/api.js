@@ -55,6 +55,7 @@ export default class Centaurus {
                 endTime
                 name
                 flagPublished
+                publishedDate
                 statusId
                 productLog
                 savedProcesses {
