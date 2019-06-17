@@ -404,7 +404,9 @@ class TableMyProcesses extends React.PureComponent {
     // console.log('Saved', rowData.saved)
     if (rowData.saved && rowData.saved.savedDateEnd) {
       // const tooltDate = rowData.saved.savedDateEnd.split('T')[0];
-      const tooltDate = moment.utc(rowData.saved.savedDateEnd).format('YYYY-MM-DD');
+      const tooltDate = moment
+        .utc(rowData.saved.savedDateEnd)
+        .format('YYYY-MM-DD');
       if (rowData.saved.savedDateEnd === null) {
         return (
           <CircularProgress
@@ -427,8 +429,9 @@ class TableMyProcesses extends React.PureComponent {
   renderCheck = rowData => {
     const { classes } = this.props;
     if (rowData.processes_published_date) {
-      
-      const publishedDate = moment.utc(rowData.processes_published_date).format('YYYY-MM-DD');
+      const publishedDate = moment
+        .utc(rowData.processes_published_date)
+        .format('YYYY-MM-DD');
       return (
         <Icon title={publishedDate} className={classes.iconCheck}>
           check
@@ -553,8 +556,6 @@ class TableMyProcesses extends React.PureComponent {
   render() {
     const { data, loading } = this.state;
     const { classes } = this.props;
-
-    console.log(this.state.sorting)
 
     data.map(row => {
       row.processes_process_id = this.renderButtonProcessId(row);
