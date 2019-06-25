@@ -45,13 +45,13 @@ class Footer extends Component {
     const { classes } = this.props;
 
     const instance =
-    process.env.NODE_ENV === 'production'
-      ? window._env_.REACT_APP_INSTANCE
-      : process.env.REACT_APP_INSTANCE;
-  
+      process.env.NODE_ENV === 'production'
+        ? window._env_.REACT_APP_INSTANCE
+        : process.env.REACT_APP_INSTANCE;
+
     let version = '--';
     let vlink = null;
-  
+
     if (
       Object.entries(git_json).length !== 0 &&
       git_json.constructor === Object
