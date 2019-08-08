@@ -18,7 +18,6 @@ import {
 import {
   Grid,
   Table,
-  TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
   Toolbar,
@@ -35,6 +34,7 @@ import CustomColumnChooser from './CustomColumnChooser';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TableDataset from './TableDataset';
+import CustomTableHeaderRowCell from './CustomTableHeaderRowCell';
 
 const styles = {
   wrapPaper: {
@@ -82,16 +82,6 @@ const styles = {
     zIndex: '999',
   },
 };
-
-const tableHeaderRowCell = ({ ...restProps }) => (
-  <TableHeaderRow.Cell
-    {...restProps}
-    style={{
-      color: '#555555',
-      fontSize: '1em',
-    }}
-  />
-);
 
 class TableMyProcesses extends React.PureComponent {
   constructor(props) {
@@ -327,10 +317,7 @@ class TableMyProcesses extends React.PureComponent {
   renderContentModal = () => {
     if (this.state.modalType === 'Datasets') {
       return (
-        <TableDataset
-          rowsDatasetRunning={this.state.rowsDatasetRunning}
-          loadData={this.loadData}
-        />
+        <TableDataset rowsDatasetRunning={this.state.rowsDatasetRunning} />
       );
     }
   };
@@ -356,10 +343,14 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   renderDataset = rowData => {
-    if (rowData.fields_display_name) {
-      const releases = rowData.releasetag_release_display_name;
+    if (
+      rowData.fields_display_name &&
+      rowData.releasetag_release_display_name &&
+      rowData.releasetag_release_display_name.props
+    ) {
+      const releases = rowData.releasetag_release_display_name.props.title;
       const datasets = rowData.fields_display_name;
-      if (datasets.length > 1) {
+      if (datasets.length > 1 && releases.length > 1) {
         const rows = datasets.map((el, i) => {
           return {
             dataset: el,
@@ -536,7 +527,6 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({
       visible: true,
       modalType: modalType,
-      rowsDatasetRunning: rows,
     });
   };
 
@@ -582,10 +572,7 @@ class TableMyProcesses extends React.PureComponent {
           />
           <Table />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-          <TableHeaderRow
-            cellComponent={tableHeaderRowCell}
-            showSortingControls
-          />
+          <CustomTableHeaderRowCell />
           <TableColumnVisibility />
           <TableSelection
             selectByRowClick
@@ -621,11 +608,11 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
 
     data.map(row => {
+      row.releasetag_release_display_name = this.renderRelease(row);
       row.processes_process_id = this.renderButtonProcessId(row);
       row.processes_start_date = this.renderStartDate(row);
       row.duration = this.renderDuration(row);
       row.processes_name = this.renderName(row);
-      row.releasetag_release_display_name = this.renderRelease(row);
       row.fields_display_name = this.renderDataset(row);
       row.tguser_display_name = this.renderOwner(row);
       row.processstatus_display_name = this.renderStatus(row);
