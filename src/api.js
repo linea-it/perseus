@@ -16,6 +16,7 @@ export default class Centaurus {
     pageSize,
     after,
     filter,
+    status,
     searchValue
   ) {
     const sort = `${sorting[0].columnName}_${sorting[0].direction}`;
@@ -23,7 +24,8 @@ export default class Centaurus {
     var strFilter = '';
 
     if (after !== null) {
-      strAfter = `, after: "${after}"`;
+      strAfter = `,
+      after: "${after}"`;
     }
 
     if (filter === 'complete') {
@@ -34,14 +36,41 @@ export default class Centaurus {
       strFilter = 'saved: true';
     } else if (filter === 'unsaved') {
       strFilter = 'saved: false';
-    } else if (filter === 'all') {
+    } else if (filter === 'published') {
+      strFilter = 'published: true';
+    } else if (filter === 'unpublished') {
+      strFilter = 'published: false';
+    } else if (filter === 'all' && status === 'all') {
       strFilter = 'allInstances: true';
+    }
+
+    if (status === 'success') {
+      strFilter = `${strFilter}, ${status}: true`;
+    } else if (status === 'failure') {
+      strFilter = `${strFilter}, ${status}: true`;
     }
 
     try {
       const processesList = await client.query(`
         {
-          processesList(${strFilter}, search: {text: "${searchValue}", columns: [processes_process_id, processes_start_time, processes_end_time, processes_name, processes_instance, release_tag_release_display_name, fields_display_name, tg_user_display_name]}, sort: [${sort}], first: ${pageSize} ${strAfter}) {
+          processesList(
+            ${strFilter},
+            search: {
+              text: "${searchValue}",
+              columns: [
+                processes_process_id,
+                processes_start_time,
+                processes_end_time,
+                processes_name,
+                processes_instance,
+                release_tag_release_display_name,
+                fields_display_name,
+                tg_user_display_name
+              ]
+            },
+            sort: [${sort}],
+            first: ${pageSize} ${strAfter}
+          ) {
             pageInfo {
               startCursor
               endCursor
