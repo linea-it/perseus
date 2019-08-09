@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { PagingState, IntegratedPaging } from '@devexpress/dx-react-grid';
+import {
+  PagingState,
+  IntegratedPaging,
+  SortingState,
+  IntegratedSorting,
+  SearchState,
+  IntegratedFiltering,
+  SelectionState,
+} from '@devexpress/dx-react-grid';
 import {
   Grid,
   Table,
   PagingPanel,
-  TableHeaderRow,
+  Toolbar,
+  SearchPanel,
 } from '@devexpress/dx-react-grid-material-ui';
+import CustomTableHeaderRowCell from './CustomTableHeaderRowCell';
 
 export default class TableDataset extends Component {
   constructor(props) {
@@ -22,21 +32,26 @@ export default class TableDataset extends Component {
       pageSizes: [5, 10, 15],
     };
   }
-
   static propTypes = {
     rowsDatasetRunning: PropTypes.array.isRequired,
   };
 
   render() {
     const { rows, columns, pageSize, pageSizes } = this.state;
-
     return (
       <Grid rows={rows} columns={columns}>
+        <SearchState onValueChange={this.changeSearchValue} />
+        <SortingState />
         <PagingState defaultCurrentPage={0} defaultPageSize={pageSize} />
-        <IntegratedPaging />
-        <Table />
-        <TableHeaderRow />
         <PagingPanel pageSizes={pageSizes} />
+        <IntegratedPaging />
+        <IntegratedSorting />
+        <IntegratedFiltering />
+        <SelectionState />
+        <Table />
+        <CustomTableHeaderRowCell />
+        <Toolbar />
+        <SearchPanel />
       </Grid>
     );
   }
