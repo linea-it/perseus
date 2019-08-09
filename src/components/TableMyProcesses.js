@@ -35,6 +35,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TableDataset from './TableDataset';
 import CustomTableHeaderRowCell from './CustomTableHeaderRowCell';
+import clsx from 'clsx';
 
 const styles = {
   wrapPaper: {
@@ -81,6 +82,9 @@ const styles = {
     left: '24px',
     zIndex: '999',
   },
+  statusFilter: {
+    left: 228,
+  },
 };
 
 class TableMyProcesses extends React.PureComponent {
@@ -126,6 +130,7 @@ class TableMyProcesses extends React.PureComponent {
       after: '',
       selection: [],
       filter: 'complete',
+      status: 'all',
       searchValue: '',
       visible: false,
       modalType: '',
@@ -201,13 +206,21 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   loadData = async () => {
-    const { sorting, pageSize, after, filter, searchValue } = this.state;
+    const {
+      sorting,
+      pageSize,
+      after,
+      filter,
+      status,
+      searchValue,
+    } = this.state;
 
     const processesList = await Centaurus.getAllProcessesList(
       sorting,
       pageSize,
       after,
       filter,
+      status,
       searchValue
     );
 
@@ -261,6 +274,7 @@ class TableMyProcesses extends React.PureComponent {
         cursor: processesList.processesList.pageInfo,
         loading: false,
         filterOld: filter,
+        statusOld: status,
       });
     } else {
       this.clearData();
@@ -342,6 +356,18 @@ class TableMyProcesses extends React.PureComponent {
     });
   };
 
+  renderRelease = rowData => {
+    if (rowData.releasetag_release_display_name) {
+      return (
+        <span title={rowData.releasetag_release_display_name}>
+          {rowData.releasetag_release_display_name}
+        </span>
+      );
+    } else {
+      return '-';
+    }
+  };
+
   renderDataset = rowData => {
     if (
       rowData.fields_display_name &&
@@ -380,17 +406,6 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderRelease = rowData => {
-    if (rowData.releasetag_release_display_name) {
-      return (
-        <span title={rowData.releasetag_release_display_name}>
-          {rowData.releasetag_release_display_name}
-        </span>
-      );
-    } else {
-      return '-';
-    }
-  };
   renderOwner = rowData => {
     if (rowData.tguser_display_name) {
       return (
@@ -493,10 +508,41 @@ class TableMyProcesses extends React.PureComponent {
     initialState.totalCount = parseInt(totalCount);
 
     this.setState(initialState, () => this.loadData());
+    this.setState({
+      status: filter !== 'incomplete' ? this.state.statusOld : 'running',
+    });
+
+    if (filter === 'incomplete') {
+      this.setState({
+        status: 'running',
+      });
+    } else if (filter === 'complete' && filterOld === 'incomplete') {
+      this.setState({
+        status: 'all',
+      });
+    }
+  };
+
+  handleChangeStatusFilter = evt => {
+    const status = evt.target.value;
+    const statusOld = this.state.statusOld;
+    const totalCount = this.state.totalCount;
+
+    const initialState = this.initialState;
+    initialState.loading = true;
+    initialState.status = status;
+    initialState.statusOld = statusOld;
+    initialState.totalCount = parseInt(totalCount);
+
+    this.setState(initialState, () => this.loadData());
+    this.setState({
+      filter: this.state.filterOld,
+    });
   };
 
   renderFilter = () => {
     const { classes } = this.props;
+
     return (
       <FormControl className={classes.formControl}>
         <InputLabel shrink htmlFor="filter-label-placeholder">
@@ -509,11 +555,46 @@ class TableMyProcesses extends React.PureComponent {
           displayEmpty
           name="filter"
         >
+          <MenuItem value={'all'}>All</MenuItem>
           <MenuItem value={'complete'}>Complete</MenuItem>
           <MenuItem value={'incomplete'}>Incomplete</MenuItem>
+          <MenuItem value={'published'}>Published</MenuItem>
           <MenuItem value={'saved'}>Saved</MenuItem>
+          <MenuItem value={'unpublished'}>Unpublished</MenuItem>
           <MenuItem value={'unsaved'}>Unsaved</MenuItem>
-          <MenuItem value={'all'}>All</MenuItem>
+        </Select>
+      </FormControl>
+    );
+  };
+
+  renderStatusFilter = () => {
+    const { classes } = this.props;
+    const { filter } = this.state;
+
+    return (
+      <FormControl className={clsx(classes.formControl, classes.statusFilter)}>
+        <InputLabel shrink htmlFor="status-label-placeholder">
+          Status
+        </InputLabel>
+        <Select
+          value={this.state.status}
+          onChange={this.handleChangeStatusFilter}
+          input={<Input name="status" id="status-label-placeholder" />}
+          displayEmpty
+          name="status"
+        >
+          {filter !== 'incomplete' ? (
+            <MenuItem value={'all'}>All</MenuItem>
+          ) : null}
+          {filter !== 'incomplete' ? (
+            <MenuItem value={'failure'}>Failure</MenuItem>
+          ) : null}
+          {filter !== 'complete' ? (
+            <MenuItem value={'running'}>Running</MenuItem>
+          ) : null}
+          {filter !== 'incomplete' ? (
+            <MenuItem value={'success'}>Success</MenuItem>
+          ) : null}
         </Select>
       </FormControl>
     );
@@ -614,6 +695,7 @@ class TableMyProcesses extends React.PureComponent {
       row.duration = this.renderDuration(row);
       row.processes_name = this.renderName(row);
       row.fields_display_name = this.renderDataset(row);
+      row.releasetag_release_display_name = this.renderRelease(row);
       row.tguser_display_name = this.renderOwner(row);
       row.processstatus_display_name = this.renderStatus(row);
       row.saved = this.renderSaved(row);
@@ -624,6 +706,7 @@ class TableMyProcesses extends React.PureComponent {
     return (
       <Paper className={classes.wrapPaper}>
         {this.renderFilter()}
+        {this.renderStatusFilter()}
         {this.renderTable()}
         {loading && this.renderLoading()}
       </Paper>
