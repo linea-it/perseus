@@ -231,10 +231,10 @@ class TableMyProcesses extends React.PureComponent {
     ) {
       const processesListLocal = processesList.processesList.edges.map(row => {
         const startDateSplit = row.node.startTime
-          ? row.node.startTime.split('T')[1]
+          ? moment(row.node.startTime).format('HH:mm:ss')
           : null;
         const startTimeSplit = row.node.startTime
-          ? row.node.startTime.split('T')[0]
+          ? moment(row.node.startTime).format('YYYY-MM-DD')
           : null;
         const startTime = moment(row.node.startTime);
         const endTime = moment(row.node.endTime);
@@ -457,7 +457,6 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
     // console.log('Saved', rowData.saved)
     if (rowData.saved && rowData.saved.savedDateEnd) {
-      // const tooltDate = rowData.saved.savedDateEnd.split('T')[0];
       const tooltDate = moment
         .utc(rowData.saved.savedDateEnd)
         .format('YYYY-MM-DD');
@@ -562,6 +561,7 @@ class TableMyProcesses extends React.PureComponent {
           <MenuItem value={'saved'}>Saved</MenuItem>
           <MenuItem value={'unpublished'}>Unpublished</MenuItem>
           <MenuItem value={'unsaved'}>Unsaved</MenuItem>
+          <MenuItem value={'removed'}>Removed</MenuItem>
         </Select>
       </FormControl>
     );
@@ -706,7 +706,7 @@ class TableMyProcesses extends React.PureComponent {
     return (
       <Paper className={classes.wrapPaper}>
         {this.renderFilter()}
-        {this.renderStatusFilter()}
+        {this.state.filter !== 'removed' && this.renderStatusFilter()}
         {this.renderTable()}
         {loading && this.renderLoading()}
       </Paper>
