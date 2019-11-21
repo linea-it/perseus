@@ -611,9 +611,8 @@ class TableMyProcesses extends React.PureComponent {
     });
   };
 
-  renderTable = () => {
+  renderTable = rows => {
     const {
-      data,
       columns,
       sorting,
       pageSize,
@@ -626,7 +625,7 @@ class TableMyProcesses extends React.PureComponent {
 
     return (
       <React.Fragment>
-        <Grid rows={data} columns={columns}>
+        <Grid rows={rows} columns={columns}>
           <SearchState onValueChange={this.changeSearchValue} />
           <SortingState
             sorting={sorting}
@@ -688,26 +687,24 @@ class TableMyProcesses extends React.PureComponent {
     const { data, loading } = this.state;
     const { classes } = this.props;
 
-    data.map(row => {
-      row.releasetag_release_display_name = this.renderRelease(row);
-      row.processes_process_id = this.renderButtonProcessId(row);
-      row.processes_start_date = this.renderStartDate(row);
-      row.duration = this.renderDuration(row);
-      row.processes_name = this.renderName(row);
-      row.fields_display_name = this.renderDataset(row);
-      row.releasetag_release_display_name = this.renderRelease(row);
-      row.tguser_display_name = this.renderOwner(row);
-      row.processstatus_display_name = this.renderStatus(row);
-      row.saved = this.renderSaved(row);
-      row.processes_published_date = this.renderCheck(row);
-      return row;
-    });
+    const rows = data.map(row => ({
+      processes_process_id: this.renderButtonProcessId(row),
+      processes_start_date: this.renderStartDate(row),
+      duration: this.renderDuration(row),
+      processes_name: this.renderName(row),
+      fields_display_name: this.renderDataset(row),
+      releasetag_release_display_name: this.renderRelease(row),
+      tguser_display_name: this.renderOwner(row),
+      processstatus_display_name: this.renderStatus(row),
+      saved: this.renderSaved(row),
+      processes_published_date: this.renderCheck(row),
+    }));
 
     return (
       <Paper className={classes.wrapPaper}>
         {this.renderFilter()}
         {this.state.filter !== 'removed' && this.renderStatusFilter()}
-        {this.renderTable()}
+        {this.renderTable(rows)}
         {loading && this.renderLoading()}
       </Paper>
     );
