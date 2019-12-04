@@ -97,7 +97,7 @@ class TableMyProcesses extends React.PureComponent {
     return {
       columns: [
         { name: 'processes_process_id', title: 'Process ID' },
-        { name: 'processes_start_date', title: 'Start Date' },
+        { name: 'processes_start_time', title: 'Start Date' },
         { name: 'duration', title: 'Duration' },
         { name: 'processes_name', title: 'Pipeline' },
         { name: 'releasetag_release_display_name', title: 'Release' },
@@ -244,8 +244,8 @@ class TableMyProcesses extends React.PureComponent {
         return {
           processes_process_id: row.node.processId,
           productLog: row.node.productLog,
-          processes_start_date: startDateSplit,
-          processes_start_time: startTimeSplit,
+          processes_start_time: startDateSplit,
+          processes_start_date: startTimeSplit,
           processes_end_time: row.node.endTime,
           duration:
             row.node.startTime && row.node.endTime !== null ? duration : '-',
@@ -299,10 +299,10 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   renderStartDate = rowData => {
-    if (rowData.processes_start_time) {
+    if (rowData.processes_start_date) {
       return (
         <span title={rowData.processes_start_date}>
-          {rowData.processes_start_time}
+          {rowData.processes_start_date}
         </span>
       );
     } else {
@@ -631,12 +631,12 @@ class TableMyProcesses extends React.PureComponent {
             sorting={sorting}
             onSortingChange={this.changeSorting}
             columnExtensions={[
-              { columnName: 'processes_start_date', sortingEnabled: false },
+              // { columnName: 'processes_start_date', sortingEnabled: false },
               { columnName: 'duration', sortingEnabled: false },
               { columnName: 'saved', sortingEnabled: false },
               // Temporary sorting disabled:
-              { columnName: 'processes_name', sortingEnabled: false },
-              { columnName: 'fields_display_name', sortingEnabled: false },
+              // { columnName: 'processes_name', sortingEnabled: false },
+              // { columnName: 'fields_display_name', sortingEnabled: false },
             ]}
           />
           <PagingState
@@ -689,7 +689,7 @@ class TableMyProcesses extends React.PureComponent {
 
     const rows = data.map(row => ({
       processes_process_id: this.renderButtonProcessId(row),
-      processes_start_date: this.renderStartDate(row),
+      processes_start_time: this.renderStartDate(row),
       duration: this.renderDuration(row),
       processes_name: this.renderName(row),
       fields_display_name: this.renderDataset(row),
