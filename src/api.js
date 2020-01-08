@@ -42,7 +42,7 @@ export default class Centaurus {
       strFilter = 'published: false';
     } else if (filter === 'all' && status === 'all') {
       strFilter = 'allInstances: true';
-    } else if (filter === 'removed' || filter === 'all') {
+    } else if (filter === 'removed') {
       strFilter = 'removed: true';
     }
 
