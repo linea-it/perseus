@@ -42,7 +42,7 @@ export default class Centaurus {
       strFilter = 'published: false';
     } else if (filter === 'all' && status === 'all') {
       strFilter = 'allInstances: true';
-    } else if (filter === 'removed') {
+    } else if (filter === 'removed' || filter === 'all') {
       strFilter = 'removed: true';
     }
 
@@ -86,6 +86,7 @@ export default class Centaurus {
                 endTime
                 name
                 flagPublished
+                flagRemoved
                 publishedDate
                 statusId
                 productLog
