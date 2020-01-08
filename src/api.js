@@ -86,6 +86,7 @@ export default class Centaurus {
                 endTime
                 name
                 flagPublished
+                flagRemoved
                 publishedDate
                 statusId
                 productLog

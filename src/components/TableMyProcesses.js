@@ -69,6 +69,13 @@ const styles = {
   },
   iconCheck: {
     color: 'green',
+    cursor: 'default',
+    textAlign: 'center',
+  },
+  icoRemoved: {
+    color: 'red',
+    cursor: 'default',
+    textAlign: 'center',
   },
   itemLink: {
     color: 'blue',
@@ -106,6 +113,7 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
         { name: 'processes_published_date', title: 'Published' },
+        { name: 'processes_flag_removed', title: 'Removed' },
       ],
       defaultColumnWidths: [
         { columnName: 'processes_process_id', width: 140 },
@@ -119,6 +127,7 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'processstatus_display_name', width: 110 },
         { columnName: 'saved', width: 100 },
         { columnName: 'processes_published_date', width: 130 },
+        { columnName: 'processes_flag_removed', width: 130 },
       ],
       data: [],
       sorting: [{ columnName: 'processes_process_id', direction: 'desc' }],
@@ -266,6 +275,7 @@ class TableMyProcesses extends React.PureComponent {
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
           processes_published_date: row.node.publishedDate,
+          processes_flag_removed: row.node.flagRemoved,
         };
       });
       this.setState({
@@ -476,6 +486,32 @@ class TableMyProcesses extends React.PureComponent {
       }
     } else if (rowData.saved === null) {
       return '-';
+    }
+  };
+
+  renderRemoved = rowData => {
+    const { classes } = this.props;
+
+    if (typeof rowData.processes_flag_removed !== 'undefined') {
+      if (rowData.processes_flag_removed === true) {
+        return (
+          <Icon title="Removed" className={classes.iconCheck}>
+            check
+          </Icon>
+        );
+      } else {
+        return (
+          <Icon title="Not removed" className={classes.icoRemoved}>
+            close
+          </Icon>
+        );
+      }
+    } else {
+      return (
+        <Icon title="Not removed" className={classes.icoRemoved}>
+          close
+        </Icon>
+      );
     }
   };
 
@@ -698,6 +734,7 @@ class TableMyProcesses extends React.PureComponent {
       processstatus_display_name: this.renderStatus(row),
       saved: this.renderSaved(row),
       processes_published_date: this.renderCheck(row),
+      processes_flag_removed: this.renderRemoved(row),
     }));
 
     return (
