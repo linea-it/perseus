@@ -1,7 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, Typography, IconButton, Button } from '@material-ui/core';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Button,
+} from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import Logo from '../assets/img/icon-des.png';
 
@@ -24,7 +30,7 @@ const styles = {
 const homeUrl = `${window.location.protocol}//${window.location.hostname}${
   window.location.port ? ':' : ''
 }${window.location.port}`;
-  
+
 class Header extends React.Component {
   static propTypes = {
     classes: PropTypes.object.isRequired,
@@ -50,12 +56,8 @@ class Header extends React.Component {
               My Workspace
             </Typography>
             <div className={classes.separatorToolBar} />
-            <Button
-                color="inherit"
-                size="large"
-                href={homeUrl}
-            >
-              <HomeIcon /> 
+            <Button color="inherit" size="large" href={homeUrl}>
+              <HomeIcon />
             </Button>
           </Toolbar>
         </AppBar>
