@@ -33,9 +33,11 @@ import moment from 'moment';
 import CustomColumnChooser from './CustomColumnChooser';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import TableDataset from './TableDataset';
 import CustomTableHeaderRowCell from './CustomTableHeaderRowCell';
 import clsx from 'clsx';
+import CloseModal from '../components/CloseModal';
 
 const styles = {
   wrapPaper: {
@@ -354,6 +356,10 @@ class TableMyProcesses extends React.PureComponent {
         open={this.state.visible}
         aria-labelledby={title}
       >
+        <DialogTitle>
+          {this.state.modalType}
+          <CloseModal callbackParent={() => this.onHideModal()} />
+        </DialogTitle>
         {this.renderContentModal()}
       </Dialog>
     );
