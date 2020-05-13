@@ -16,8 +16,12 @@
     "lokka": "^1.7.0",
     "lokka-transport-http": "^1.6.1",
     "moment": "^2.23.0",
+    "plotly.js": "^1.54.1",
     "react": "^16.8.3",
-    "react-dom": "^16.8.3"
+    "react-dom": "^16.8.3",
+    "react-plotly.js": "^2.4.0",
+    "react-swipeable-views": "^0.13.9",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
