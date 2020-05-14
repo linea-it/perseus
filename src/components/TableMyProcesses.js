@@ -43,6 +43,7 @@ import CloseModal from '../components/CloseModal';
 import SettingsIcon from '@material-ui/icons/Settings';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import AccessAlarm from '@material-ui/icons/AccessAlarm';
+import ShareIcon from '@material-ui/icons/Share';
 import TimeProfile from './TimeProfile';
 import convert from 'xml-js';
 import ProcessConfiguration from './ProcessConfiguration';
@@ -123,13 +124,14 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'fields_display_name', title: 'Dataset' },
         { name: 'execution_detail', title: 'Config' },
         { name: 'processes_process_id', title: 'Process ID' },
-        { name: 'processes_start_date', title: 'Start Date' },
         { name: 'processes_start_time', title: 'Start Time' },
+        { name: 'processes_start', title: 'Start' },
         { name: 'duration', title: 'Duration' },
         { name: 'report', title: 'Report' },
         { name: 'time_profile', title: 'Time Profile' },
         { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
+        { name: 'shared', title: 'Shared' },
         { name: 'removed', title: 'Remov.' },
         { name: 'processes_published_date', title: 'Published' },
         { name: 'export', title: 'Export' },
@@ -141,13 +143,14 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'fields_display_name', width: 140 },
         { columnName: 'execution_detail', width: 80 },
         { columnName: 'processes_process_id', width: 140 },
-        { columnName: 'processes_start_date', width: 100 },
         { columnName: 'processes_start_time', width: 100 },
+        { columnName: 'processes_start', width: 100 },
         { columnName: 'duration', width: 110 },
         { columnName: 'report', width: 110 },
         { columnName: 'time_profile', width: 140 },
         { columnName: 'processstatus_display_name', width: 110 },
         { columnName: 'saved', width: 80 },
+        { columnName: 'shared', width: 80 },
         { columnName: 'removed', width: 80 },
         { columnName: 'processes_published_date', width: 80 },
         { columnName: 'export', width: 80 },
@@ -264,11 +267,11 @@ class TableMyProcesses extends React.PureComponent {
       processesList.processesList.edges
     ) {
       const processesListLocal = processesList.processesList.edges.map(row => {
-        const startDateSplit = row.node.startTime
-          ? moment(row.node.startTime).format('HH:mm:ss')
-          : null;
         const startTimeSplit = row.node.startTime
           ? moment(row.node.startTime).format('YYYY-MM-DD')
+          : null;
+        const startSplit = row.node.startTime
+          ? moment(row.node.startTime).format('HH:mm:ss')
           : null;
         const startTime = moment(row.node.startTime);
         const endTime = moment(row.node.endTime);
@@ -277,8 +280,8 @@ class TableMyProcesses extends React.PureComponent {
 
         return {
           processes_process_id: row.node.processId,
-          processes_start_date: startDateSplit,
           processes_start_time: startTimeSplit,
+          processes_start: startSplit,
           duration:
             row.node.startTime && row.node.endTime !== null ? duration : '-',
           processes_name: row.node.name,
@@ -298,6 +301,7 @@ class TableMyProcesses extends React.PureComponent {
           tguser_display_name: row.node.session.user.displayName,
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
+          shared: true,
           removed: row.node.flagRemoved,
           export: true,
           processes_published_date: row.node.publishedDate,
@@ -369,11 +373,11 @@ class TableMyProcesses extends React.PureComponent {
     });
   };
 
-  renderStartDate = rowData => {
-    if (rowData.processes_start_date) {
+  renderStartTime = rowData => {
+    if (rowData.processes_start_time) {
       return (
-        <span title={rowData.processes_start_date}>
-          {rowData.processes_start_date}
+        <span title={rowData.processes_start}>
+          {rowData.processes_start_time}
         </span>
       );
     } else {
@@ -381,12 +385,10 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderStartTime = rowData => {
-    if (rowData.processes_start_time) {
+  renderStart = rowData => {
+    if (rowData.processes_start) {
       return (
-        <span title={rowData.processes_start_date}>
-          {rowData.processes_start_time}
-        </span>
+        <span title={rowData.processes_start}>{rowData.processes_start}</span>
       );
     } else {
       return '-';
@@ -594,6 +596,23 @@ class TableMyProcesses extends React.PureComponent {
           </Icon>
         );
       }
+    } else if (rowData.saved === null) {
+      return '-';
+    }
+  };
+
+  renderShared = rowData => {
+    if (rowData.shared) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            // onClick={() => this.handleExecutionDetailClick(rowData)}
+          >
+            <ShareIcon />
+          </Button>
+        </React.Fragment>
+      );
     } else if (rowData.saved === null) {
       return '-';
     }
@@ -820,6 +839,7 @@ class TableMyProcesses extends React.PureComponent {
               // { columnName: 'processes_start_date', sortingEnabled: false },
               { columnName: 'duration', sortingEnabled: false },
               { columnName: 'saved', sortingEnabled: false },
+              { columnName: 'shared', sortingEnabled: false },
               { columnName: 'removed', sortingEnabled: false },
               { columnName: 'time_profile', sortingEnabled: false },
               // Temporary sorting disabled:
@@ -894,8 +914,8 @@ class TableMyProcesses extends React.PureComponent {
     const rows = data.map(row => ({
       time_profile: this.renderTimeProfile(row),
       processes_process_id: this.renderProcessesId(row),
-      processes_start_date: this.renderStartDate(row),
       processes_start_time: this.renderStartTime(row),
+      processes_start: this.renderStart(row),
       duration: this.renderDuration(row),
       processes_name: this.renderName(row),
       fields_display_name: this.renderDataset(row),
@@ -903,6 +923,7 @@ class TableMyProcesses extends React.PureComponent {
       tguser_display_name: this.renderOwner(row),
       processstatus_display_name: this.renderStatus(row),
       saved: this.renderSaved(row),
+      shared: this.renderShared(row),
       removed: this.renderRemoved(row),
       processes_published_date: this.renderCheck(row),
       execution_detail: this.renderExecutionDetail(row),
