@@ -16,7 +16,6 @@ pipeline {
                 sh 'yarn cache clean'
                 sh 'yarn install'
                 sh 'yarn lint'
-                sh 'yarn test'
             }
         }
         stage('Creating version.json') {
