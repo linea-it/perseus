@@ -1094,27 +1094,17 @@
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
-"@devexpress/dx-core@1.10.0":
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/@devexpress/dx-core/-/dx-core-1.10.0.tgz#3fe39d57211aecdf54eed093611e74bf6d1fd1be"
-  integrity sha512-9EZ11t1SIqpgTk+Rn6bwpqyosnC/L7GUTkb7+6R1aw8XmFkPeVtyWBAj/DiCFPouM1nph89Xbl1pxevLL4jKpw==
-
-"@devexpress/dx-core@1.11.2":
+"@devexpress/dx-core@1.11.2", "@devexpress/dx-core@^1.10.5":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/@devexpress/dx-core/-/dx-core-1.11.2.tgz#b745aa7674a9c0040cd9c6737d099575b6c6f83d"
   integrity sha512-0nlBzjulneu4cgu9Y4y2HdrqZl+6VoUSenkH+ywKwFmMSjEcyBJHC5xQ+gIIdfHvJTVl+d9VNoHsF15EjG+Giw==
 
-"@devexpress/dx-grid-core@1.10.0":
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/@devexpress/dx-grid-core/-/dx-grid-core-1.10.0.tgz#00f074ee26e693c1bdcc65fe1c31f2aa8f318d3c"
-  integrity sha512-ew0FXp649vU8kHHhRbr+i8gBMdaTiyjNjbRhtqNNYMygc4lUaxfczobr3fztCafVUPViPm9JWCp3XnqHx4VE4Q==
-
-"@devexpress/dx-grid-core@1.11.2":
+"@devexpress/dx-grid-core@1.11.2", "@devexpress/dx-grid-core@^1.10.5":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/@devexpress/dx-grid-core/-/dx-grid-core-1.11.2.tgz#61b69a7c08eecffe45881f7289fb174d5219e649"
   integrity sha512-/I6t0jJfBYIveEyWSp3EtTUhi6ddzVZsongf96CIAe654hMInnYKTRvvxwv3P6Px7E8rgMw8ZD30pNJ0xCoXmQ==
 
-"@devexpress/dx-react-core@^1.10.0":
+"@devexpress/dx-react-core@^1.10.5":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/@devexpress/dx-react-core/-/dx-react-core-1.11.2.tgz#ac0f56ed6e3b43ba38caf46f8acc28b182bce68c"
   integrity sha512-bp8z/C6zSWvZrgHWW/6InFxVoGi9IGblN9x3iJq65YfuNnBZRyTEoQ09LOcEpLdqw/EhunPd82WcFku+Iv8Jvg==
@@ -1122,7 +1112,7 @@
     "@devexpress/dx-core" "1.11.2"
     prop-types "^15.7.2"
 
-"@devexpress/dx-react-grid-material-ui@^1.10.0":
+"@devexpress/dx-react-grid-material-ui@^1.10.5":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/@devexpress/dx-react-grid-material-ui/-/dx-react-grid-material-ui-1.11.2.tgz#43fa0d1d8aed8a73bdcaea9417f1266b3cf70185"
   integrity sha512-0u/eecOPWr+4GjwsDF1QQUeafa4/DVal3L7hWaH60iMo7ECKx95GXqBuAg4rqd4N0dkXajIhOqkrNFpAiP0jyQ==
@@ -1130,7 +1120,7 @@
     classnames "^2.2.6"
     prop-types "^15.7.2"
 
-"@devexpress/dx-react-grid@^1.10.0":
+"@devexpress/dx-react-grid@^1.10.5":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/@devexpress/dx-react-grid/-/dx-react-grid-1.11.2.tgz#81fe2c3ddc309a7a4b81b9fff453a677268e1b18"
   integrity sha512-mgs67LAJnL5goimePaIAJtcQEIzcPLGtLBJG4+okbi3EVTeXpTRnNvX7pmStNiWlcGXENFuHTJvvvIOUOK0XIg==

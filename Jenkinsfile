@@ -13,6 +13,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
+                sh 'yarn cache clean'
                 sh 'yarn install'
                 sh 'yarn lint'
                 sh 'yarn test'
