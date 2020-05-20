@@ -3,7 +3,6 @@ FROM node:8.10 as builder
 COPY . /src/app
 WORKDIR /src/app
 RUN yarn -v
-RUN yarn cache clean
 RUN yarn --ignore-optional
 RUN yarn run build
 FROM nginx:latest
