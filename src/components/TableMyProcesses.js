@@ -33,11 +33,20 @@ import moment from 'moment';
 import CustomColumnChooser from './CustomColumnChooser';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TableDataset from './TableDataset';
 import CustomTableHeaderRowCell from './CustomTableHeaderRowCell';
 import clsx from 'clsx';
 import CloseModal from '../components/CloseModal';
+import SettingsIcon from '@material-ui/icons/Settings';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import AccessAlarm from '@material-ui/icons/AccessAlarm';
+import ShareIcon from '@material-ui/icons/Share';
+import TimeProfile from './TimeProfile';
+import convert from 'xml-js';
+import ProcessConfiguration from './ProcessConfiguration';
 
 const styles = {
   wrapPaper: {
@@ -74,6 +83,11 @@ const styles = {
     cursor: 'default',
     textAlign: 'center',
   },
+  iconCheckRed: {
+    color: 'red',
+    cursor: 'default',
+    textAlign: 'center',
+  },
   icoRemoved: {
     color: 'red',
     cursor: 'default',
@@ -105,31 +119,42 @@ class TableMyProcesses extends React.PureComponent {
   get initialState() {
     return {
       columns: [
-        { name: 'processes_process_id', title: 'Process ID' },
-        { name: 'processes_start_time', title: 'Start Date' },
-        { name: 'duration', title: 'Duration' },
         { name: 'processes_name', title: 'Pipeline' },
         { name: 'releasetag_release_display_name', title: 'Release' },
         { name: 'fields_display_name', title: 'Dataset' },
-        { name: 'tguser_display_name', title: 'Owner' },
+        { name: 'execution_detail', title: 'Config' },
+        { name: 'processes_process_id', title: 'Process ID' },
+        { name: 'processes_start_time', title: 'Start Time' },
+        { name: 'processes_start', title: 'Start' },
+        { name: 'duration', title: 'Duration' },
+        { name: 'report', title: 'Report' },
+        { name: 'time_profile', title: 'Time Profile' },
         { name: 'processstatus_display_name', title: 'Status' },
         { name: 'saved', title: 'Saved' },
+        { name: 'shared', title: 'Shared' },
+        { name: 'removed', title: 'Remov.' },
         { name: 'processes_published_date', title: 'Published' },
-        { name: 'processes_flag_removed', title: 'Removed' },
+        { name: 'export', title: 'Export' },
+        { name: 'released', title: 'Released' },
       ],
       defaultColumnWidths: [
+        { columnName: 'processes_name', width: 140 },
+        { columnName: 'releasetag_release_display_name', width: 110 },
+        { columnName: 'fields_display_name', width: 140 },
+        { columnName: 'execution_detail', width: 80 },
         { columnName: 'processes_process_id', width: 140 },
-        { columnName: 'processes_start_time', width: 140 },
-        { columnName: 'processes_start_date', width: 120 },
+        { columnName: 'processes_start_time', width: 100 },
+        { columnName: 'processes_start', width: 100 },
         { columnName: 'duration', width: 110 },
-        { columnName: 'processes_name', width: 180 },
-        { columnName: 'releasetag_release_display_name', width: 180 },
-        { columnName: 'fields_display_name', width: 180 },
-        { columnName: 'tguser_display_name', width: 180 },
+        { columnName: 'report', width: 110 },
+        { columnName: 'time_profile', width: 140 },
         { columnName: 'processstatus_display_name', width: 110 },
-        { columnName: 'saved', width: 100 },
-        { columnName: 'processes_published_date', width: 130 },
-        { columnName: 'processes_flag_removed', width: 130 },
+        { columnName: 'saved', width: 80 },
+        { columnName: 'shared', width: 80 },
+        { columnName: 'removed', width: 80 },
+        { columnName: 'processes_published_date', width: 80 },
+        { columnName: 'export', width: 80 },
+        { columnName: 'released', width: 80 },
       ],
       data: [],
       sorting: [{ columnName: 'processes_process_id', direction: 'desc' }],
@@ -145,6 +170,7 @@ class TableMyProcesses extends React.PureComponent {
       searchValue: '',
       visible: false,
       modalType: '',
+      isProcessConfigurationVisible: false,
       rowsDatasetRunning: [],
     };
   }
@@ -241,11 +267,11 @@ class TableMyProcesses extends React.PureComponent {
       processesList.processesList.edges
     ) {
       const processesListLocal = processesList.processesList.edges.map(row => {
-        const startDateSplit = row.node.startTime
-          ? moment(row.node.startTime).format('HH:mm:ss')
-          : null;
         const startTimeSplit = row.node.startTime
           ? moment(row.node.startTime).format('YYYY-MM-DD')
+          : null;
+        const startSplit = row.node.startTime
+          ? moment(row.node.startTime).format('HH:mm:ss')
           : null;
         const startTime = moment(row.node.startTime);
         const endTime = moment(row.node.endTime);
@@ -254,13 +280,12 @@ class TableMyProcesses extends React.PureComponent {
 
         return {
           processes_process_id: row.node.processId,
-          productLog: row.node.productLog,
-          processes_start_time: startDateSplit,
-          processes_start_date: startTimeSplit,
-          processes_end_time: row.node.endTime,
+          processes_start_time: startTimeSplit,
+          processes_start: startSplit,
           duration:
             row.node.startTime && row.node.endTime !== null ? duration : '-',
           processes_name: row.node.name,
+          processes_instance: row.node.instance,
           releasetag_release_display_name:
             row.node.fields.edges.length !== 0
               ? row.node.fields.edges.map(edge => {
@@ -276,8 +301,11 @@ class TableMyProcesses extends React.PureComponent {
           tguser_display_name: row.node.session.user.displayName,
           processstatus_display_name: row.node.processStatus.name,
           saved: row.node.savedProcesses,
+          shared: true,
+          removed: row.node.flagRemoved,
+          export: true,
           processes_published_date: row.node.publishedDate,
-          processes_flag_removed: row.node.flagRemoved,
+          xmlConfig: row.node.xmlConfig,
         };
       });
       this.setState({
@@ -310,12 +338,57 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
-  renderStartDate = rowData => {
-    if (rowData.processes_start_date) {
+  renderProcessesId = rowData => {
+    if (rowData.processes_process_id) {
       return (
-        <span title={rowData.processes_start_date}>
-          {rowData.processes_start_date}
+        <span title={rowData.processes_process_id}>
+          {rowData.processes_process_id}
         </span>
+      );
+    } else {
+      return '-';
+    }
+  };
+
+  renderExecutionDetail = rowData => {
+    if (rowData.processes_process_id) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            onClick={() => this.handleExecutionDetailClick(rowData)}
+          >
+            <SettingsIcon />
+          </Button>
+        </React.Fragment>
+      );
+    }
+    return '-';
+  };
+
+  handleProcessConfigurationClose = () => {
+    this.setState({
+      isProcessConfigurationVisible: false,
+      processConfiguration: {},
+    });
+  };
+
+  renderStartTime = rowData => {
+    if (rowData.processes_start_time) {
+      return (
+        <span title={rowData.processes_start}>
+          {rowData.processes_start_time}
+        </span>
+      );
+    } else {
+      return '-';
+    }
+  };
+
+  renderStart = rowData => {
+    if (rowData.processes_start) {
+      return (
+        <span title={rowData.processes_start}>{rowData.processes_start}</span>
       );
     } else {
       return '-';
@@ -340,29 +413,62 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
-  renderContentModal = () => {
+  renderModal = () => {
     if (this.state.modalType === 'Datasets') {
       return (
-        <TableDataset rowsDatasetRunning={this.state.rowsDatasetRunning} />
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+        >
+          <DialogTitle>
+            <CloseModal callbackParent={() => this.onHideModal()} />
+          </DialogTitle>
+          <TableDataset
+            rowsDatasetRunning={this.state.rowsDatasetRunning}
+            loadData={this.loadData}
+          />
+        </Dialog>
+      );
+    } else if (this.state.modalType === 'Profile') {
+      if (this.state.timeProfileData && this.state.timeProfileData.length > 0) {
+        return (
+          <Dialog
+            onClose={this.onHideModal}
+            open={this.state.visible}
+            aria-labelledby={this.state.modalType}
+            maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+          >
+            <DialogTitle>
+              <CloseModal callbackParent={() => this.onHideModal()} />
+            </DialogTitle>
+            <TimeProfile data={this.state.timeProfileData} />
+          </Dialog>
+        );
+      }
+      return (
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Profile' ? 'lg' : 'sm'}
+        >
+          <DialogTitle>
+            Time Profiler
+            <CloseModal callbackParent={() => this.onHideModal()} />
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Unable to generate plot due to a lack of data!
+              <br />
+              Please, verify the status of the process you are trying to
+              analyze.
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
       );
     }
-  };
-
-  renderModal = () => {
-    const title = this.state.modalType;
-    return (
-      <Dialog
-        onClose={this.onHideModal}
-        open={this.state.visible}
-        aria-labelledby={title}
-      >
-        <DialogTitle>
-          {this.state.modalType}
-          <CloseModal callbackParent={() => this.onHideModal()} />
-        </DialogTitle>
-        {this.renderContentModal()}
-      </Dialog>
-    );
   };
 
   onShowDatasets = rows => {
@@ -370,6 +476,10 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({
       rowsDatasetRunning: rows,
     });
+  };
+
+  onShowProcessPlot = process => {
+    this.onClickModal(process, 'Profile');
   };
 
   renderRelease = rowData => {
@@ -385,14 +495,10 @@ class TableMyProcesses extends React.PureComponent {
   };
 
   renderDataset = rowData => {
-    if (
-      rowData.fields_display_name &&
-      rowData.releasetag_release_display_name &&
-      rowData.releasetag_release_display_name.props
-    ) {
-      const releases = rowData.releasetag_release_display_name.props.title;
+    if (rowData.fields_display_name) {
+      const releases = rowData.releasetag_release_display_name;
       const datasets = rowData.fields_display_name;
-      if (datasets.length > 1 && releases.length > 1) {
+      if (datasets.length > 1) {
         const rows = datasets.map((el, i) => {
           return {
             dataset: el,
@@ -495,29 +601,63 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
+  renderShared = rowData => {
+    if (rowData.shared) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            // onClick={() => this.handleExecutionDetailClick(rowData)}
+          >
+            <ShareIcon />
+          </Button>
+        </React.Fragment>
+      );
+    } else if (rowData.saved === null) {
+      return '-';
+    }
+  };
+
   renderRemoved = rowData => {
     const { classes } = this.props;
-
-    if (typeof rowData.processes_flag_removed !== 'undefined') {
-      if (rowData.processes_flag_removed === true) {
-        return (
-          <Icon title="Removed" className={classes.iconCheck}>
-            check
-          </Icon>
-        );
-      } else {
-        return (
-          <Icon title="Not removed" className={classes.icoRemoved}>
-            close
-          </Icon>
-        );
-      }
+    if (rowData.removed) {
+      return <Icon className={classes.iconCheckRed}>check</Icon>;
     } else {
+      return '-';
+    }
+  };
+
+  renderExport = rowData => {
+    if (rowData.export) {
       return (
-        <Icon title="Not removed" className={classes.icoRemoved}>
-          close
-        </Icon>
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            // onClick={() => this.handleExecutionDetailClick(rowData)}
+          >
+            <GetAppIcon />
+          </Button>
+        </React.Fragment>
       );
+    } else {
+      return '-';
+    }
+  };
+
+  renderTimeProfile = rowData => {
+    if (rowData.processes_process_id) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            onClick={() => this.onShowProcessPlot(rowData.processes_process_id)}
+          >
+            <AccessAlarm />
+          </Button>
+        </React.Fragment>
+      );
+    } else {
+      return '-';
     }
   };
 
@@ -578,6 +718,17 @@ class TableMyProcesses extends React.PureComponent {
     this.setState(initialState, () => this.loadData());
     this.setState({
       filter: this.state.filterOld,
+    });
+  };
+
+  handleExecutionDetailClick = rowData => {
+    const configuration = JSON.parse(
+      convert.xml2json(rowData.xmlConfig, { compact: true })
+    );
+
+    this.setState({
+      isProcessConfigurationVisible: true,
+      processConfiguration: configuration,
     });
   };
 
@@ -646,11 +797,23 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({ visible: false });
   };
 
-  onClickModal = (rows, modalType) => {
-    this.setState({
-      visible: true,
-      modalType: modalType,
-    });
+  onClickModal = (data, modalType) => {
+    if (modalType === 'Datasets') {
+      this.setState({
+        visible: true,
+        modalType: modalType,
+        rowsDatasetRunning: data,
+      });
+    } else if (modalType === 'Profile') {
+      const timeProfile = Centaurus.getTimeProfile(data);
+      timeProfile.then(res =>
+        this.setState({
+          visible: true,
+          modalType: modalType,
+          timeProfileData: res,
+        })
+      );
+    }
   };
 
   renderTable = rows => {
@@ -676,6 +839,9 @@ class TableMyProcesses extends React.PureComponent {
               // { columnName: 'processes_start_date', sortingEnabled: false },
               { columnName: 'duration', sortingEnabled: false },
               { columnName: 'saved', sortingEnabled: false },
+              { columnName: 'shared', sortingEnabled: false },
+              { columnName: 'removed', sortingEnabled: false },
+              { columnName: 'time_profile', sortingEnabled: false },
               // Temporary sorting disabled:
               // { columnName: 'processes_name', sortingEnabled: false },
               // { columnName: 'fields_display_name', sortingEnabled: false },
@@ -692,7 +858,18 @@ class TableMyProcesses extends React.PureComponent {
             selection={selection}
             onSelectionChange={this.changeSelection}
           />
-          <Table />
+          <Table
+            columnExtensions={[
+              {
+                columnName: 'time_profile',
+                align: 'center',
+              },
+              {
+                columnName: 'execution_detail',
+                align: 'center',
+              },
+            ]}
+          />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
           <CustomTableHeaderRowCell />
           <TableColumnVisibility />
@@ -707,6 +884,11 @@ class TableMyProcesses extends React.PureComponent {
           <CustomColumnChooser />
         </Grid>
         {this.renderModal()}
+        <ProcessConfiguration
+          open={this.state.isProcessConfigurationVisible}
+          onClose={this.handleProcessConfigurationClose}
+          configuration={this.state.processConfiguration}
+        />
       </React.Fragment>
     );
   };
@@ -730,8 +912,10 @@ class TableMyProcesses extends React.PureComponent {
     const { classes } = this.props;
 
     const rows = data.map(row => ({
-      processes_process_id: this.renderButtonProcessId(row),
-      processes_start_time: this.renderStartDate(row),
+      time_profile: this.renderTimeProfile(row),
+      processes_process_id: this.renderProcessesId(row),
+      processes_start_time: this.renderStartTime(row),
+      processes_start: this.renderStart(row),
       duration: this.renderDuration(row),
       processes_name: this.renderName(row),
       fields_display_name: this.renderDataset(row),
@@ -739,8 +923,11 @@ class TableMyProcesses extends React.PureComponent {
       tguser_display_name: this.renderOwner(row),
       processstatus_display_name: this.renderStatus(row),
       saved: this.renderSaved(row),
+      shared: this.renderShared(row),
+      removed: this.renderRemoved(row),
       processes_published_date: this.renderCheck(row),
-      processes_flag_removed: this.renderRemoved(row),
+      execution_detail: this.renderExecutionDetail(row),
+      export: this.renderExport(row),
     }));
 
     return (

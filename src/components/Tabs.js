@@ -80,7 +80,7 @@ class SimpleTabs extends React.Component {
           onChange={this.handleChange}
         >
           <Tab label="My Process" />
-          <Tab label="My Profile" disabled />
+          {/* <Tab label="My Profile" disabled /> */}
         </Tabs>
         {value === 0 && (
           <TabContainerTable className={classes.tab}>
