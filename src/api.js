@@ -16,6 +16,7 @@ export default class Centaurus {
     pageSize,
     after,
     filter,
+    filterUser,
     status,
     searchValue
   ) {
@@ -49,6 +50,8 @@ export default class Centaurus {
     if (status === 'success') {
       strFilter = `${strFilter}, ${status}: true`;
     } else if (status === 'failure') {
+      strFilter = `${strFilter}, ${status}: true`;
+    } else if (status === 'running') {
       strFilter = `${strFilter}, ${status}: true`;
     }
 
@@ -91,6 +94,7 @@ export default class Centaurus {
                 statusId
                 productLog
                 xmlConfig
+                comments
                 savedProcesses {
                   savedDate
                   savedDateEnd
@@ -154,6 +158,27 @@ export default class Centaurus {
         moduleName: item.node.moduleName,
         jobs: item.node.jobs,
       }));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getAllCommentsByProcessId(dataProcessId) {
+    try {
+      const commentsProcess = await client.query(`
+        {
+          commentsByProcessId(processId: ${dataProcessId}) {
+            comments
+            date
+            user {
+              displayName
+            }
+          }
+        }
+      `);
+      return commentsProcess;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
