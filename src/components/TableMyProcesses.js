@@ -851,6 +851,17 @@ class TableMyProcesses extends React.PureComponent {
     });
   };
 
+  handleExecutionDetailClick = rowData => {
+    const configuration = JSON.parse(
+      convert.xml2json(rowData.xmlConfig, { compact: true })
+    );
+
+    this.setState({
+      isProcessConfigurationVisible: true,
+      processConfiguration: configuration,
+    });
+  };
+
   renderFilter = () => {
     const { classes } = this.props;
 
