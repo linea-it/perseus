@@ -44,9 +44,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import AccessAlarm from '@material-ui/icons/AccessAlarm';
 import ShareIcon from '@material-ui/icons/Share';
+import CommentIcon from '@material-ui/icons/Comment';
 import TimeProfile from './TimeProfile';
 import convert from 'xml-js';
 import ProcessConfiguration from './ProcessConfiguration';
+import Comments from './comments';
 
 const styles = {
   wrapPaper: {
@@ -105,6 +107,13 @@ const styles = {
     left: '24px',
     zIndex: '999',
   },
+  formControlUser: {
+    width: '180px',
+    position: 'absolute',
+    top: '8px',
+    left: '440px',
+    zIndex: '999',
+  },
   statusFilter: {
     left: 228,
   },
@@ -133,6 +142,7 @@ class TableMyProcesses extends React.PureComponent {
         { name: 'saved', title: 'Saved' },
         { name: 'shared', title: 'Shared' },
         { name: 'removed', title: 'Remov.' },
+        { name: 'comments', title: 'Comm...' },
         { name: 'processes_published_date', title: 'Published' },
         { name: 'export', title: 'Export' },
         { name: 'released', title: 'Released' },
@@ -152,6 +162,7 @@ class TableMyProcesses extends React.PureComponent {
         { columnName: 'saved', width: 80 },
         { columnName: 'shared', width: 80 },
         { columnName: 'removed', width: 80 },
+        { columnName: 'comments', width: 80 },
         { columnName: 'processes_published_date', width: 80 },
         { columnName: 'export', width: 80 },
         { columnName: 'released', width: 80 },
@@ -159,14 +170,15 @@ class TableMyProcesses extends React.PureComponent {
       data: [],
       sorting: [{ columnName: 'processes_process_id', direction: 'desc' }],
       totalCount: 0,
-      pageSize: 10,
-      pageSizes: [5, 10, 15],
+      pageSize: 8,
+      pageSizes: [8, 10, 15],
       currentPage: 0,
       loading: true,
       after: '',
       selection: [],
       filter: 'complete',
       status: 'all',
+      filterUser: 'all',
       searchValue: '',
       visible: false,
       modalType: '',
@@ -248,6 +260,7 @@ class TableMyProcesses extends React.PureComponent {
       pageSize,
       after,
       filter,
+      filterUser,
       status,
       searchValue,
     } = this.state;
@@ -257,6 +270,7 @@ class TableMyProcesses extends React.PureComponent {
       pageSize,
       after,
       filter,
+      filterUser,
       status,
       searchValue
     );
@@ -303,6 +317,7 @@ class TableMyProcesses extends React.PureComponent {
           saved: row.node.savedProcesses,
           shared: true,
           removed: row.node.flagRemoved,
+          comments: row.node.comments,
           export: true,
           processes_published_date: row.node.publishedDate,
           xmlConfig: row.node.xmlConfig,
@@ -338,10 +353,24 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
+  renderOpenProcessesId = processId => {
+    window.open(
+      `https://testing.linea.gov.br/VP/getViewProcessCon?process_id=${processId}`,
+      'Process ID'
+    );
+  };
+
   renderProcessesId = rowData => {
+    const { classes } = this.props;
     if (rowData.processes_process_id) {
       return (
-        <span title={rowData.processes_process_id}>
+        <span
+          className={classes.itemLink}
+          title={rowData.processes_process_id}
+          onClick={() =>
+            this.renderOpenProcessesId(rowData.processes_process_id)
+          }
+        >
           {rowData.processes_process_id}
         </span>
       );
@@ -468,6 +497,49 @@ class TableMyProcesses extends React.PureComponent {
           </DialogContent>
         </Dialog>
       );
+    } else if (this.state.modalType === 'Comments') {
+      if (
+        this.state.comments.commentsByProcessId &&
+        this.state.comments.commentsByProcessId.length > 0
+      ) {
+        return (
+          <Dialog
+            onClose={this.onHideModal}
+            open={this.state.visible}
+            aria-labelledby={this.state.modalType}
+            maxWidth={this.state.modalType === 'Comments' ? 'lg' : 'sm'}
+          >
+            <DialogTitle>
+              Comments
+              <CloseModal callbackParent={() => this.onHideModal()} />
+            </DialogTitle>
+            <Comments
+              commentsProcess={this.state.comments.commentsByProcessId}
+            />
+          </Dialog>
+        );
+      }
+      return (
+        <Dialog
+          onClose={this.onHideModal}
+          open={this.state.visible}
+          aria-labelledby={this.state.modalType}
+          maxWidth={this.state.modalType === 'Comments' ? 'lg' : 'sm'}
+        >
+          <DialogTitle>
+            Comments
+            <CloseModal callbackParent={() => this.onHideModal()} />
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Unable to generate Comments due to a lack of data!
+              <br />
+              Please, verify the status of the process you are trying to
+              analyze.
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
+      );
     }
   };
 
@@ -476,6 +548,10 @@ class TableMyProcesses extends React.PureComponent {
     this.setState({
       rowsDatasetRunning: rows,
     });
+  };
+
+  onShowComments = process => {
+    this.onClickModal(process, 'Comments');
   };
 
   onShowProcessPlot = process => {
@@ -618,6 +694,23 @@ class TableMyProcesses extends React.PureComponent {
     }
   };
 
+  renderComments = rowData => {
+    if (rowData.shared) {
+      return (
+        <React.Fragment>
+          <Button
+            style={styles.btnIco}
+            onClick={() => this.onShowComments(rowData.processes_process_id)}
+          >
+            <CommentIcon />
+          </Button>
+        </React.Fragment>
+      );
+    } else if (rowData.saved === null) {
+      return '-';
+    }
+  };
+
   renderRemoved = rowData => {
     const { classes } = this.props;
     if (rowData.removed) {
@@ -696,10 +789,17 @@ class TableMyProcesses extends React.PureComponent {
     if (filter === 'incomplete') {
       this.setState({
         status: 'running',
+        filterUser: 'all',
       });
     } else if (filter === 'complete' && filterOld === 'incomplete') {
       this.setState({
         status: 'all',
+        filterUser: 'all',
+      });
+    } else {
+      this.setState({
+        status: 'all',
+        filterUser: 'all',
       });
     }
   };
@@ -718,6 +818,36 @@ class TableMyProcesses extends React.PureComponent {
     this.setState(initialState, () => this.loadData());
     this.setState({
       filter: this.state.filterOld,
+      filterUser: 'all',
+    });
+  };
+
+  handleChangeFilterUser = evt => {
+    const filter = this.state.filter;
+    const filterUser = evt.target.value;
+    const filterUserOld = this.state.filterUserOld;
+    const status = this.state.status;
+    const totalCount = this.state.totalCount;
+
+    const initialState = this.initialState;
+    initialState.loading = true;
+    initialState.filter = filter;
+    initialState.filterUser = filterUser;
+    initialState.filterUserOld = filterUserOld;
+    initialState.status = status;
+    initialState.totalCount = parseInt(totalCount);
+
+    this.setState(initialState, () => this.loadData());
+  };
+
+  handleExecutionDetailClick = rowData => {
+    const configuration = JSON.parse(
+      convert.xml2json(rowData.xmlConfig, { compact: true })
+    );
+
+    this.setState({
+      isProcessConfigurationVisible: true,
+      processConfiguration: configuration,
     });
   };
 
@@ -793,6 +923,28 @@ class TableMyProcesses extends React.PureComponent {
     );
   };
 
+  renderIntanceFilter = () => {
+    const { classes } = this.props;
+    return (
+      <FormControl className={classes.formControlUser}>
+        <InputLabel shrink htmlFor="filterUser-label-placeholder">
+          Instance
+        </InputLabel>
+        <Select
+          value={this.state.filterUser}
+          onChange={this.handleChangeFilterUser}
+          input={<Input name="filterUser" id="filterUser-label-placeholder" />}
+          displayEmpty
+          name="filterUser"
+        >
+          <MenuItem value={'all'}>All</MenuItem>
+          <MenuItem value={'user'}>User</MenuItem>
+          <MenuItem value={'testing'}>Testing</MenuItem>
+        </Select>
+      </FormControl>
+    );
+  };
+
   onHideModal = () => {
     this.setState({ visible: false });
   };
@@ -811,6 +963,15 @@ class TableMyProcesses extends React.PureComponent {
           visible: true,
           modalType: modalType,
           timeProfileData: res,
+        })
+      );
+    } else if (modalType === 'Comments') {
+      const comments = Centaurus.getAllCommentsByProcessId(data);
+      comments.then(res =>
+        this.setState({
+          visible: true,
+          modalType: modalType,
+          comments: res,
         })
       );
     }
@@ -840,6 +1001,7 @@ class TableMyProcesses extends React.PureComponent {
               { columnName: 'duration', sortingEnabled: false },
               { columnName: 'saved', sortingEnabled: false },
               { columnName: 'shared', sortingEnabled: false },
+              { columnName: 'comments', sortingEnabled: false },
               { columnName: 'removed', sortingEnabled: false },
               { columnName: 'time_profile', sortingEnabled: false },
               // Temporary sorting disabled:
@@ -925,6 +1087,7 @@ class TableMyProcesses extends React.PureComponent {
       saved: this.renderSaved(row),
       shared: this.renderShared(row),
       removed: this.renderRemoved(row),
+      comments: this.renderComments(row),
       processes_published_date: this.renderCheck(row),
       execution_detail: this.renderExecutionDetail(row),
       export: this.renderExport(row),
@@ -934,6 +1097,7 @@ class TableMyProcesses extends React.PureComponent {
       <Paper className={classes.wrapPaper}>
         {this.renderFilter()}
         {this.state.filter !== 'removed' && this.renderStatusFilter()}
+        {this.renderIntanceFilter()}
         {this.renderTable(rows)}
         {loading && this.renderLoading()}
       </Paper>
